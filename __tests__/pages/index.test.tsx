@@ -5,9 +5,12 @@ import "@testing-library/jest-dom/vitest";
 import Home from "~/app/page";
 
 describe("Home page", () => {
-  it("should have get started text", () => {
+  it("Have a heading", () => {
     render(<Home />);
-    const getStartedText = screen.getByText(/Get started by editing/i);
+    const getStartedText = screen.getByRole("heading", {
+      level: 1,
+      name: "Jelajah AGI",
+    });
     expect(getStartedText).toBeInTheDocument();
   });
 });
