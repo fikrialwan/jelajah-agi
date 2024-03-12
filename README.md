@@ -6,6 +6,7 @@ Check out:
 
 - RFC: [0001-jelajah-agi](https://fikrialwan.notion.site/RFC-Development-a-Jelajah-AGI-site-Frontend-c1cadf282d094263b3c492a3c9d8a7ea?pvs=74)
 - Repo: <https://github.com/fikrialwan/jelajah-agi>
+- Web Staging: <https://jelajah-agi-stg.vercel.app/>
 
 
 ## Setup
