@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { validateParticipantFormSchema as formSchema } from "~/lib/schema/judgeValidate.schema";
 
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../../ui/dialog";
 
 import {
@@ -20,8 +22,8 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
+
 import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
 import { Button } from "../../ui/button";
 
 interface IListTeam {
@@ -34,13 +36,15 @@ const CardTeam = (props: { name: string; isValidate: boolean }) => {
   const { name, isValidate } = props;
   return (
     <div className="py-5 px-6 rounded-lg shadow-md border flex justify-between items-center">
-      <span>{name}</span>
+      <span>
+        <p>{name}</p>
+      </span>
       <span
         className={`p-2 ${
           isValidate ? "bg-green-600" : "bg-red-600"
         } text-white rounded-xl text-xs`}
       >
-        {isValidate ? "Validated" : "Not Validated"}
+        <span>{isValidate ? "Validated" : "Not Validated"}</span>
       </span>
     </div>
   );
@@ -64,12 +68,18 @@ const data: { teams: IListTeam[] } = {
 const ListTeamBooth = () => {
   const [dialogTeam, setDialogTeam] = useState<IListTeam | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      numberOfParticipants: 0,
+    },
+  });
 
-  const handleSubmitValidate = (e: any) => {
-    e.preventDefault();
+  const handleSubmitValidate = (values: z.infer<typeof formSchema>) => {
+    // e.preventDefault();
     setDialogTeam(null);
     setOpenDialog(false);
-    console.log("submit");
+    console.log("submit", values);
   };
   return (
     <>
@@ -102,23 +112,37 @@ const ListTeamBooth = () => {
           <DialogHeader>
             <DialogTitle>Validasi {dialogTeam?.name}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmitValidate}>
-            <div className="my-5 grid flex-1 gap-2">
-              <Label htmlFor="numberOfParticipants">
-                Number of Participants
-              </Label>
-              <Input
-                type="number"
-                id="numberOfParticipants"
-                placeholder="Input Number of Participants"
-              />
-            </div>
-            <DialogFooter>
-              <Button type="submit" variant="default">
-                Validate
-              </Button>
-            </DialogFooter>
-          </form>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmitValidate)}>
+              <section className="my-5 grid flex-1 gap-2">
+                <FormField
+                  control={form.control}
+                  name="numberOfParticipants"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Number of Participants</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            id="numberOfParticipants"
+                            placeholder="Input Number of Participants"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </section>
+              <DialogFooter>
+                <Button type="submit" variant="default">
+                  Validate
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </>
