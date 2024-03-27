@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={fontJakarta.variable}>
+      <body className={`${fontJakarta.variable} h-screen`}>
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>

@@ -2,7 +2,7 @@ import { ParticipantProcess } from "~/lib/components/pages/participant/process-p
 
 const ParticipantPage = () => {
   return (
-    <section className="container mt-[50px] pt-8 h-screen">
+    <section className="container pt-8 h-full">
       <ParticipantProcess />
     </section>
   );
