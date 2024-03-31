@@ -1,7 +1,5 @@
 import Booth from "~/lib/components/pages/ruler/booth";
 
-function RulerPage() {
+export default function BoothPage() {
   return <Booth />;
 }
-
-export default RulerPage;
