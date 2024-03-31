@@ -1,6 +1,7 @@
-import { PencilIcon, Trash, User } from "lucide-react";
+import { Trash, User } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent, CardTitle } from "~/lib/components/ui/card";
+import BoothUpdate from "./update";
 
 interface IProps {
   title: string;
@@ -28,9 +29,7 @@ export default function CardBooth({ title, img, pic }: IProps) {
               <User size={14} /> {pic}
             </p>
           </div>
-          <button aria-label="EditButton">
-            <PencilIcon className="text-primary" />
-          </button>
+          <BoothUpdate />
           <button aria-label="DeleteButton">
             <Trash className="text-destructive" />
           </button>
