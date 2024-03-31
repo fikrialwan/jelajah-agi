@@ -8,7 +8,7 @@ describe("update booth", () => {
     render(<BoothUpdate />);
   });
 
-  it("Should render modal correctly when click add button", async () => {
+  it("Should render modal correctly when click update button", async () => {
     const editButton = screen.getByLabelText("EditButton");
 
     fireEvent.click(editButton);
