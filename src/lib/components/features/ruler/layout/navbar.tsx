@@ -22,7 +22,7 @@ export default function RulerNavbar() {
       className={cn(
         "bg-primary",
         "md:bg-transparent",
-        "w-full py-3 px-5 flex flex-row justify-end items-center"
+        "w-full py-3 px-5 flex flex-row justify-end items-center sticky top-0"
       )}
     >
       <h1
