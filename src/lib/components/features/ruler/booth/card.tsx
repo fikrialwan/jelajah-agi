@@ -2,6 +2,7 @@ import { Trash, User } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent, CardTitle } from "~/lib/components/ui/card";
 import BoothUpdate from "./update";
+import BoothDelete from "./delete";
 
 interface IProps {
   title: string;
@@ -30,9 +31,7 @@ export default function CardBooth({ title, img, pic }: IProps) {
             </p>
           </div>
           <BoothUpdate />
-          <button aria-label="DeleteButton">
-            <Trash className="text-destructive" />
-          </button>
+          <BoothDelete />
         </CardContent>
       </Card>
     </li>
