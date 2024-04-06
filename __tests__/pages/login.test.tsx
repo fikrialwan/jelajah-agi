@@ -1,6 +1,7 @@
 import { it, describe, expect, beforeAll } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+
 import Login from "~/lib/components/pages/login";
 
 describe("Login page", () => {
