@@ -1,6 +1,7 @@
 import { Store } from "lucide-react";
 import { Card, CardContent, CardTitle } from "~/lib/components/ui/card";
 import UserDelete from "./delete";
+import UserUpdate from "./update";
 
 interface IProps {
   name: string;
@@ -20,8 +21,7 @@ export default function CardUser({ name, booth }: IProps) {
               </p>
             )}
           </div>
-          {/* <BoothUpdate />
-          <BoothDelete /> */}
+          <UserUpdate />
           <UserDelete />
         </CardContent>
       </Card>
