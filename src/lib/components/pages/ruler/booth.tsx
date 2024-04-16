@@ -1,5 +1,3 @@
-import { Plus } from "lucide-react";
-import { Button } from "~/lib/components/ui/button";
 import CardBooth from "../../features/ruler/booth/card";
 import { BoothData } from "~/data/booth-dummy";
 import BoothAdd from "../../features/ruler/booth/add";
