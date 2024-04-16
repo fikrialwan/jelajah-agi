@@ -10,7 +10,7 @@ import {
 } from "~/lib/components/ui/dialog";
 import { Input } from "~/lib/components/ui/input";
 
-export default function AddUser() {
+export default function UserAdd() {
   return (
     <Dialog>
       <Button variant="default" className="w-24 self-end" asChild>
