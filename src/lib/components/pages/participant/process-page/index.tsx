@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { CurrentBooth } from "./current-page";
 import { ListProcess } from "./list-process-page";
+import { useRouter } from "next/navigation";
 export interface IBooth {
   id: number;
   name: string;
@@ -63,10 +64,16 @@ const data = {
 const ParticipantProcess = () => {
   const [screen, setScreen] = useState<"current" | "process">("current");
   const currentBooth = data.listBooth.filter((booth) => booth.currentBooth)[0];
+  const router = useRouter();
   return (
     <section className="h-[calc(100%-82px)]">
       <div className="flex justify-end gap-2">
-        <Button variant={"default"}>Scan QR</Button>
+        <Button
+          variant={"default"}
+          onClick={() => router.push("/participants/scan-qr")}
+        >
+          Scan QR
+        </Button>
         <Button
           variant={"outline"}
           onClick={() => {
