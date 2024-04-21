@@ -1,15 +1,18 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+import { getDatabase } from "firebase/database";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: "jelajah-agi.firebaseapp.com",
-  projectId: "jelajah-agi",
-  storageBucket: "jelajah-agi.appspot.com",
-  messagingSenderId: "470976376345",
+  authDomain: "jelajahagi.firebaseapp.com",
+  projectId: "jelajahagi",
+  storageBucket: "jelajahagi.appspot.com",
+  messagingSenderId: "693805997549",
   appId: process.env.NEXT_PUBLIC_APP_ID,
-  measurementId: "G-QCS1R87P68",
 };
 
 export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
+export const db = getDatabase(app);
+export const auth = getAuth(app);
+export const storage = getStorage(app);
