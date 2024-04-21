@@ -48,6 +48,9 @@ export default function LoginForm() {
           const role = await get(
             child(ref(db), `account/${userCredential.user.uid}/type`)
           );
+          cookies.set("role", role.val() as string);
+          cookies.set("uid", userCredential.user.uid);
+
           setLoading(false);
           toast({
             variant: "success",
