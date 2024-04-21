@@ -1,5 +1,8 @@
 "use client";
 
+import { useCookies } from "next-client-cookies";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { get, child, ref } from "firebase/database";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,14 +18,65 @@ import {
 } from "../../ui/form";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
+import { useState } from "react";
+import { auth, db } from "~/lib/api/firebase";
+import { useToast } from "../../ui/use-toast";
+import { useRouter } from "next/navigation";
+import { ToastAction } from "../../ui/toast";
 
 export default function LoginForm() {
+  const router = useRouter();
+  const cookies = useCookies();
+  const { toast } = useToast();
+
+  const [isLoading, setLoading] = useState<boolean>();
+
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
   });
 
-  function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    console.log({ values });
+  async function onSubmit(values: z.infer<typeof loginFormSchema>) {
+    try {
+      if (!isLoading) {
+        setLoading(true);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
+        if (userCredential.user) {
+          const role = await get(
+            child(ref(db), `account/${userCredential.user.uid}/type`)
+          );
+          cookies.set("role", role.val() as string);
+          cookies.set("uid", userCredential.user.uid);
+
+          setLoading(false);
+          toast({
+            variant: "success",
+            title: "Success",
+            description: "Login successfully",
+          });
+          router.replace(`/${role.val() as string}`);
+        } else {
+          setLoading(false);
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Login failed.",
+            description: "Please check your email and password again.",
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
+          });
+        }
+      }
+    } catch (error) {
+      setLoading(false);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Login failed.",
+        description: "Please check your email and password again.",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    }
   }
   return (
     <Form {...form}>
@@ -57,8 +111,8 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <Button variant="default" className="my-4">
-          Login
+        <Button variant={isLoading ? "secondary" : "default"} className="my-4">
+          {isLoading ? "Loading..." : "Login"}
         </Button>
       </form>
     </Form>
