@@ -11,6 +11,7 @@ export interface IBooth {
   name: string;
   isDone: boolean;
   currentBooth: boolean;
+  typeResult: "file" | "link";
 }
 
 const data = {
@@ -20,38 +21,44 @@ const data = {
       name: "Puzzle",
       isDone: true,
       currentBooth: false,
+      typeResult: "file",
     },
     {
       id: 2,
       name: "Janaiz",
       isDone: true,
       currentBooth: false,
+      typeResult: "link",
     },
     {
       id: 3,
       name: "Panahan",
       isDone: false,
       currentBooth: true,
+      typeResult: "file",
     },
     {
       id: 4,
       name: "Panahan",
       isDone: false,
       currentBooth: false,
+      typeResult: "file",
     },
     {
       id: 5,
       name: "Panahan",
       isDone: false,
       currentBooth: false,
+      typeResult: "file",
     },
     {
       id: 6,
       name: "Panahan",
       isDone: false,
       currentBooth: false,
+      typeResult: "file",
     },
-  ],
+  ] as IBooth[],
 };
 
 const ParticipantProcess = () => {

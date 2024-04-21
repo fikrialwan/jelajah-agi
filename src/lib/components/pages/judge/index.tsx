@@ -25,27 +25,30 @@ import {
 
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
+import Score from "../../features/judge/score";
 
 interface IListTeam {
   id: number;
   name: string;
-  isValidate: boolean;
+  status: "validate" | "process" | "validateDone" | "done";
+  score?: number;
 }
 
-const CardTeam = (props: { name: string; isValidate: boolean }) => {
-  const { name, isValidate } = props;
+const CardTeam = (props: {
+  name: string;
+  status: "validate" | "process" | "validateDone" | "done";
+  score?: number;
+}) => {
+  const { name, status, score } = props;
   return (
     <div className="py-5 px-6 rounded-lg shadow-md border flex justify-between items-center">
-      <span>
-        <p>{name}</p>
-      </span>
-      <span
-        className={`p-2 ${
-          isValidate ? "bg-green-600" : "bg-red-600"
-        } text-white rounded-xl text-xs`}
-      >
-        <span>{isValidate ? "Validated" : "Not Validated"}</span>
-      </span>
+      <p>{name}</p>
+      {status === "validate" && <Button variant="destructive">Validate</Button>}
+      {status === "process" && <Button variant="outline">on Process</Button>}
+      {status === "validateDone" && <Score team={name} />}
+      {status === "done" && (
+        <p className="text-green-600 text-2xl font-semibold">{score}</p>
+      )}
     </div>
   );
 };
@@ -55,12 +58,23 @@ const data: { teams: IListTeam[] } = {
     {
       id: 1,
       name: "Team 1",
-      isValidate: true,
+      status: "validate",
     },
     {
       id: 2,
       name: "Team 2",
-      isValidate: false,
+      status: "process",
+    },
+    {
+      id: 3,
+      name: "Team 3",
+      status: "validateDone",
+    },
+    {
+      id: 4,
+      name: "Team 4",
+      status: "done",
+      score: 10,
     },
   ],
 };
@@ -90,11 +104,17 @@ const ListTeamBooth = () => {
               key={index}
               className="mb-5"
               onClick={() => {
-                setDialogTeam(team);
-                setOpenDialog(true);
+                if (team.status === "validate") {
+                  setDialogTeam(team);
+                  setOpenDialog(true);
+                }
               }}
             >
-              <CardTeam name={team.name} isValidate={team.isValidate} />
+              <CardTeam
+                name={team.name}
+                status={team.status}
+                score={team.score}
+              />
             </button>
           );
         })}

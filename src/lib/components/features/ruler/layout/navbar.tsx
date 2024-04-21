@@ -5,7 +5,11 @@ import {
   AlertDialogCancel,
   AlertDialogTrigger,
 } from "@radix-ui/react-alert-dialog";
+import { signOut } from "firebase/auth";
 import { LogOut } from "lucide-react";
+import { useCookies } from "next-client-cookies";
+import { useRouter } from "next/navigation";
+import { auth } from "~/lib/api/firebase";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -17,6 +21,22 @@ import { Button } from "~/lib/components/ui/button";
 import { cn } from "~/lib/styles/utils";
 
 export default function RulerNavbar() {
+  const router = useRouter();
+  const cookies = useCookies();
+
+  async function handleLogout() {
+    try {
+      await signOut(auth);
+      cookies.remove("role");
+      cookies.remove("uid");
+      router.replace("/login");
+    } catch (_) {
+      cookies.remove("role");
+      cookies.remove("uid");
+      router.replace("/login");
+    }
+  }
+
   return (
     <header
       className={cn(
@@ -56,7 +76,7 @@ export default function RulerNavbar() {
               <AlertDialogCancel>Cancel</AlertDialogCancel>
             </Button>
             <Button asChild variant="destructive" className="mb-2 md:m-0">
-              <AlertDialogAction>Yes</AlertDialogAction>
+              <AlertDialogAction onClick={handleLogout}>Yes</AlertDialogAction>
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
