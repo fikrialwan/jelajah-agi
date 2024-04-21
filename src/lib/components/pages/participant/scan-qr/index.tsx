@@ -11,12 +11,21 @@ export const ScanQr = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("kok");
+    // Get data current booth ( const currentBooth )
+    const currentBooth = "panahan";
     const html5QrCode = new Html5Qrcode("scan-qr-reader");
     const qrCodeSuccessCallback = (decodedText: any, decodedResult: any) => {
       console.log(decodedResult, decodedText);
       html5QrCode.stop().then(() => {
-        //Show success message
+        // Show success message
+        setShowQRScanner(false);
+        // Check if decodedText === currentBooth
+        if (decodedText === currentBooth) {
+          router.replace("/participants");
+        } else {
+          alert("go to current booth");
+          // show message 'cant scan the booth'
+        }
       });
       /* handle success */
     };
