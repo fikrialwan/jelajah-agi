@@ -48,6 +48,12 @@ export default function LoginForm() {
           const role = await get(
             child(ref(db), `account/${userCredential.user.uid}/type`)
           );
+          if (role.val() === "judge") {
+            const booth = await get(
+              child(ref(db), `account/${userCredential.user.uid}/booth`)
+            );
+            cookies.set("booth", booth.val() as string);
+          }
           cookies.set("role", role.val() as string);
           cookies.set("uid", userCredential.user.uid);
 
