@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,26 +26,21 @@ import {
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import Score from "../../features/judge/score";
+import { IActivity } from "~/lib/interfaces/activity.interface";
+import { child, get, onValue, ref } from "firebase/database";
+import { db } from "~/lib/api/firebase";
+import { useCookies } from "next-client-cookies";
 
-interface IListTeam {
-  id: number;
-  name: string;
-  status: "validate" | "process" | "validateDone" | "done";
-  score?: number;
-}
-
-const CardTeam = (props: {
-  name: string;
-  status: "validate" | "process" | "validateDone" | "done";
-  score?: number;
-}) => {
+const CardTeam = (props: { name: string; status: string; score?: number }) => {
   const { name, status, score } = props;
   return (
     <div className="py-5 px-6 rounded-lg shadow-md border flex justify-between items-center">
       <p>{name}</p>
-      {status === "validate" && <Button variant="destructive">Validate</Button>}
+      {status === "validation" && (
+        <Button variant="destructive">Validate</Button>
+      )}
       {status === "process" && <Button variant="outline">on Process</Button>}
-      {status === "validateDone" && <Score team={name} />}
+      {status === "needInputScore" && <Score team={name} />}
       {status === "done" && (
         <p className="text-green-600 text-2xl font-semibold">{score}</p>
       )}
@@ -53,34 +48,11 @@ const CardTeam = (props: {
   );
 };
 
-const data: { teams: IListTeam[] } = {
-  teams: [
-    {
-      id: 1,
-      name: "Team 1",
-      status: "validate",
-    },
-    {
-      id: 2,
-      name: "Team 2",
-      status: "process",
-    },
-    {
-      id: 3,
-      name: "Team 3",
-      status: "validateDone",
-    },
-    {
-      id: 4,
-      name: "Team 4",
-      status: "done",
-      score: 10,
-    },
-  ],
-};
-
 const ListTeamBooth = () => {
-  const [dialogTeam, setDialogTeam] = useState<IListTeam | null>(null);
+  const cookies = useCookies();
+
+  const [activities, setActivities] = useState<IActivity[]>([]);
+  const [dialogTeam, setDialogTeam] = useState<IActivity | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -88,6 +60,30 @@ const ListTeamBooth = () => {
       numberOfParticipants: 0,
     },
   });
+
+  useEffect(() => {
+    const activityRef = ref(db, "activity");
+    const unsubscribe = onValue(activityRef, async (snapshot) => {
+      const activitiesTemp: IActivity[] = [];
+      const snapshotData = snapshot.val() as any[];
+      if (snapshotData) {
+        for (const item of snapshotData) {
+          if (item.booth === cookies.get("booth")) {
+            const name = await get(child(ref(db), `account/${item.uid}/name`));
+            activitiesTemp.push({
+              ...(item as Omit<IActivity, "name">),
+              name: name.val(),
+            });
+          }
+        }
+      }
+      setActivities(activitiesTemp);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [cookies]);
 
   const handleSubmitValidate = (values: z.infer<typeof formSchema>) => {
     // e.preventDefault();
@@ -98,22 +94,22 @@ const ListTeamBooth = () => {
   return (
     <>
       <div className="flex w-full flex-col">
-        {data.teams.map((team, index) => {
+        {activities.map((activity, index) => {
           return (
             <button
               key={index}
               className="mb-5"
               onClick={() => {
-                if (team.status === "validate") {
-                  setDialogTeam(team);
+                if (activity.status === "validation") {
+                  setDialogTeam(activity);
                   setOpenDialog(true);
                 }
               }}
             >
               <CardTeam
-                name={team.name}
-                status={team.status}
-                score={team.score}
+                name={activity.name}
+                status={activity.status}
+                score={activity.score}
               />
             </button>
           );
