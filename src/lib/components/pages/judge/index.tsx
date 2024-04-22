@@ -27,7 +27,7 @@ import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import Score from "../../features/judge/score";
 import { IActivity } from "~/lib/interfaces/activity.interface";
-import { child, get, onValue, ref } from "firebase/database";
+import { child, get, onValue, ref, update } from "firebase/database";
 import { db } from "~/lib/api/firebase";
 import { useCookies } from "next-client-cookies";
 
@@ -67,14 +67,17 @@ const ListTeamBooth = () => {
       const activitiesTemp: IActivity[] = [];
       const snapshotData = snapshot.val() as any[];
       if (snapshotData) {
+        let index = 0;
         for (const item of snapshotData) {
           if (item.booth === cookies.get("booth")) {
             const name = await get(child(ref(db), `account/${item.uid}/name`));
             activitiesTemp.push({
-              ...(item as Omit<IActivity, "name">),
+              ...(item as Omit<IActivity, "name" | "id">),
               name: name.val(),
+              id: index,
             });
           }
+          index++;
         }
       }
       setActivities(activitiesTemp);
@@ -86,10 +89,13 @@ const ListTeamBooth = () => {
   }, [cookies]);
 
   const handleSubmitValidate = (values: z.infer<typeof formSchema>) => {
-    // e.preventDefault();
+    update(ref(db, `activity/${dialogTeam?.id}`), {
+      status: "process",
+      startDate: new Date(),
+      totalMember: values.numberOfParticipants,
+    });
     setDialogTeam(null);
     setOpenDialog(false);
-    console.log("submit", values);
   };
   return (
     <>
@@ -144,6 +150,9 @@ const ListTeamBooth = () => {
                             id="numberOfParticipants"
                             placeholder="Input Number of Participants"
                             {...field}
+                            onChange={(event) =>
+                              field.onChange(Number(event.target.value))
+                            }
                           />
                         </FormControl>
                         <FormMessage />

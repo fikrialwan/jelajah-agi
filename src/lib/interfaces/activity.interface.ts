@@ -7,4 +7,5 @@ export interface IActivity {
   totalMember: string;
   uid: string;
   name: string;
+  id: number;
 }
