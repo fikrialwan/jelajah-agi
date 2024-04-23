@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CookiesProvider } from "next-client-cookies/server";
 import { Toaster } from "~/lib/components/ui/toaster";
+import AtomProvider from "~/lib/providers/atom-provider";
 import ReactQueryProvider from "~/lib/providers/react-query-provider";
 import { fontJakarta } from "~/lib/styles/font";
 import "~/lib/styles/globals.css";
@@ -20,7 +21,7 @@ export default function RootLayout({
       <body className={`${fontJakarta.variable} h-screen`}>
         <CookiesProvider>
           <ReactQueryProvider>
-            {children}
+            <AtomProvider>{children}</AtomProvider>
             <Toaster />
           </ReactQueryProvider>
         </CookiesProvider>
