@@ -1,31 +1,45 @@
 "use client";
 
 import { useEffect, useState } from "react";
+// import dayjs from "dayjs";
 
 import { Html5Qrcode } from "html5-qrcode";
 import { Button } from "~/lib/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useToast } from "~/lib/components/ui/use-toast";
 
 export const ScanQr = () => {
   const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Get data current booth ( const currentBooth )
-    const currentBooth = "panahan";
+    const currentBooth = "janaiz";
     const html5QrCode = new Html5Qrcode("scan-qr-reader");
-    const qrCodeSuccessCallback = (decodedText: any, decodedResult: any) => {
-      console.log(decodedResult, decodedText);
+    const qrCodeSuccessCallback = (decodedText: any) => {
+      // decodedText = text hasil scan
+      // decodedResult = {result text, decoderName, format dll}
+
       html5QrCode.stop().then(() => {
         // Show success message
         setShowQRScanner(false);
         // Check if decodedText === currentBooth
         if (decodedText === currentBooth) {
-          router.replace("/participants");
+          // set Firebase for current booth already scanned
+          const data = {
+            checkedInTime: new Date(),
+          };
+          console.log("data", data);
         } else {
-          alert("go to current booth");
+          toast({
+            variant: "destructive",
+            title: "Can't scan this booth, please go to the current Booth",
+          });
+          // alert("go to current booth");
           // show message 'cant scan the booth'
         }
+        router.replace("/participants");
       });
       /* handle success */
     };
@@ -33,6 +47,9 @@ export const ScanQr = () => {
       console.log(error);
       /* handle success */
     };
+
+    // Check if when scan is the time is still available !!
+
     if (showQRScanner) {
       html5QrCode.start(
         { facingMode: "user" },

@@ -45,16 +45,19 @@ export default function LoginForm() {
           values.password
         );
         if (userCredential.user) {
-          const role = await get(
-            child(ref(db), `account/${userCredential.user.uid}/type`)
+          const user = await get(
+            child(ref(db), `account/${userCredential.user.uid}`)
           );
-          if (role.val() === "judge") {
+          if (user.val().type === "judge") {
             const booth = await get(
               child(ref(db), `account/${userCredential.user.uid}/booth`)
             );
             cookies.set("booth", booth.val() as string);
           }
-          cookies.set("role", role.val() as string);
+          cookies.set("role", user.val().type as string);
+          if (user.val().index !== undefined) {
+            cookies.set("indexUser", user.val().index);
+          }
           cookies.set("uid", userCredential.user.uid);
 
           setLoading(false);
@@ -63,7 +66,7 @@ export default function LoginForm() {
             title: "Success",
             description: "Login successfully",
           });
-          router.replace(`/${role.val() as string}`);
+          router.replace(`/${user.val().type as string}`);
         } else {
           setLoading(false);
           toast({
