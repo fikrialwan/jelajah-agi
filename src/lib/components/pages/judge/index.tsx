@@ -65,19 +65,18 @@ const ListTeamBooth = () => {
     const activityRef = ref(db, "activity");
     const unsubscribe = onValue(activityRef, async (snapshot) => {
       const activitiesTemp: IActivity[] = [];
-      const snapshotData = snapshot.val() as any[];
+      const snapshotData = Object.entries(snapshot.val()).map(
+        ([id, activity]) => ({ id, ...(activity as any) })
+      );
       if (snapshotData) {
-        let index = 0;
         for (const item of snapshotData) {
           if (item.booth === cookies.get("booth")) {
             const name = await get(child(ref(db), `account/${item.uid}/name`));
             activitiesTemp.push({
-              ...(item as Omit<IActivity, "name" | "id">),
+              ...(item as Omit<IActivity, "name">),
               name: name.val(),
-              id: index,
             });
           }
-          index++;
         }
       }
       setActivities(activitiesTemp);
