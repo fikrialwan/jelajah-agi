@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "../../ui/card";
+import Link from "next/link";
+import { Button } from "../../ui/button";
 
 const dataTeam = [
   { teamName: "Team 1", score: "100" },
@@ -55,6 +57,11 @@ const LeaderboardList = () => {
   const [currentTab, setCurrentTab] = useState<number>(0);
   return (
     <div className="w-full">
+      <div className="flex justify-end">
+        <Button>
+          <Link href={"/login"}>Login</Link>
+        </Button>
+      </div>
       <div className="text-center mb-5">
         <h1 className="font-semibold text-2xl">Leaderboard</h1>
       </div>

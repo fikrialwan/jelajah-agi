@@ -31,7 +31,6 @@ const ParticipantProcess = () => {
     const statusUserRef = ref(db, `account/${uid}`);
     const unSubscribe = onValue(statusUserRef, async (snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot.val(), "masuk");
         setParticipantStatus(snapshot.val());
       }
     });
@@ -53,7 +52,7 @@ const ParticipantProcess = () => {
         <>
           <div className="flex justify-end gap-2">
             {participantStatus.isScanned?.includes(currentIndex) ? (
-              <UploadResult typeResult={currentBooth.typeResult} />
+              <UploadResult typeResult={currentBooth.type} />
             ) : (
               <Button
                 // variant={"default"}

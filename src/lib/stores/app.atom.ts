@@ -1,10 +1,10 @@
 import { atom } from "jotai";
 
 export interface IBooth {
-  id: number;
+  slug: number;
   name: string;
   image: string;
-  typeResult: "file" | "link";
+  type: "file" | "link";
 }
 
 export interface IParticipantStatus {

@@ -1,21 +1,51 @@
 "use client";
 
 import { useEffect, useState } from "react";
-// import dayjs from "dayjs";
 
 import { Html5Qrcode } from "html5-qrcode";
 import { Button } from "~/lib/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useToast } from "~/lib/components/ui/use-toast";
+import { db } from "~/lib/api/firebase";
+import { child, ref, get, onValue, update, push, set } from "firebase/database";
+import { useCookies } from "next-client-cookies";
+import { ListBooth, ParticipantStatus } from "~/lib/stores/app.atom";
+import { useAtom } from "jotai";
 
 export const ScanQr = () => {
   const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
+  const [listBooth, setListBooth] = useAtom(ListBooth);
+  const [participantStatus, setParticipantStatus] = useAtom(ParticipantStatus);
   const router = useRouter();
   const { toast } = useToast();
+  const cookies = useCookies();
+  const uid = cookies.get("uid");
 
   useEffect(() => {
-    // Get data current booth ( const currentBooth )
-    const currentBooth = "janaiz";
+    const dbRef = ref(db);
+    get(child(dbRef, "booth")).then((snapshot) => {
+      if (snapshot.exists()) {
+        setListBooth(snapshot.val());
+      }
+    });
+    const statusUserRef = ref(db, `account/${uid}`);
+    const unSubscribe = onValue(statusUserRef, async (snapshot) => {
+      if (snapshot.exists()) {
+        setParticipantStatus(snapshot.val());
+      }
+    });
+
+    return () => {
+      unSubscribe();
+    };
+  }, []);
+
+  const currentIndex = participantStatus.currentBooth
+    ? participantStatus.currentBooth
+    : participantStatus.index;
+  const currentBooth = listBooth[currentIndex];
+
+  useEffect(() => {
     const html5QrCode = new Html5Qrcode("scan-qr-reader");
     const qrCodeSuccessCallback = (decodedText: any) => {
       // decodedText = text hasil scan
@@ -25,19 +55,34 @@ export const ScanQr = () => {
         // Show success message
         setShowQRScanner(false);
         // Check if decodedText === currentBooth
-        if (decodedText === currentBooth) {
+        if (decodedText === currentBooth.slug) {
           // set Firebase for current booth already scanned
-          const data = {
-            checkedInTime: new Date(),
+          const userUpdateData = {
+            ...participantStatus,
+            currentBooth: currentIndex,
+            isScanned: participantStatus.isScanned
+              ? participantStatus.isScanned.push(currentIndex)
+              : [currentIndex],
           };
-          console.log("data", data);
+          const dataActivty = {
+            startDate: new Date(),
+            booth: currentBooth.slug,
+            endDate: "-",
+            score: 0,
+            status: "process",
+            totalMember: 0,
+            uid,
+          };
+          const newActivityRef = push(ref(db, "activity"));
+          set(newActivityRef, dataActivty);
+          const updates: any = {};
+          updates["/account/" + uid] = userUpdateData;
+          update(ref(db), updates);
         } else {
           toast({
             variant: "destructive",
             title: "Can't scan this booth, please go to the current Booth",
           });
-          // alert("go to current booth");
-          // show message 'cant scan the booth'
         }
         router.replace("/participants");
       });
@@ -65,6 +110,8 @@ export const ScanQr = () => {
       //   html5QrCode.clear();
     };
   }, [showQRScanner]);
+
+  console.log("currentBooth", currentBooth);
   return (
     <section className="h-[calc(100%-82px)]">
       <Button onClick={() => router.push("/participants")}>Back to List</Button>
