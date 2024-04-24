@@ -49,10 +49,15 @@ export default function LoginForm() {
             child(ref(db), `account/${userCredential.user.uid}`)
           );
           if (user.val().type === "judge") {
-            const booth = await get(
-              child(ref(db), `account/${userCredential.user.uid}/booth`)
+            const boothSlug = user.val().booth as string;
+            cookies.set("booth", boothSlug);
+            const booths = await get(child(ref(db), "booth"));
+            const booth = (booths.val() as any[]).filter(
+              (item) => item.slug === boothSlug
             );
-            cookies.set("booth", booth.val() as string);
+            if (booth.length > 0) {
+              cookies.set("boothType", booth[0].type);
+            }
           }
           cookies.set("role", user.val().type as string);
           if (user.val().index !== undefined) {

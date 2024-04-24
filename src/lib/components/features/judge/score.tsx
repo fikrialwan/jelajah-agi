@@ -1,7 +1,14 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { Plus } from "lucide-react";
+import { ref, update } from "firebase/database";
+import { useCookies } from "next-client-cookies";
+import Image from "next/image";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { db } from "~/lib/api/firebase";
 import { Button } from "~/lib/components/ui/button";
 import {
   Dialog,
@@ -11,19 +18,40 @@ import {
   DialogTrigger,
 } from "~/lib/components/ui/dialog";
 import { Input } from "~/lib/components/ui/input";
+import { inputScoreFormSchema } from "~/lib/schema/judgeAction.schema";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/lib/components/ui/select";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../../ui/form";
+import { useRef } from "react";
 
 interface IProps {
   team: string;
+  result: string;
+  id: string;
 }
 
-export default function Score({ team }: IProps) {
+export default function Score({ team, result, id }: IProps) {
+  const cookies = useCookies();
+
+  const dialogCLoseRef = useRef<HTMLButtonElement>(null);
+
+  const form = useForm<z.infer<typeof inputScoreFormSchema>>({
+    resolver: zodResolver(inputScoreFormSchema),
+  });
+
+  const handleSave = (values: z.infer<typeof inputScoreFormSchema>) => {
+    update(ref(db, `activity/${id}`), {
+      status: "done",
+      score: values.score,
+    });
+    dialogCLoseRef.current?.click();
+  };
+
   return (
     <Dialog>
       <Button variant="default" className="w-24 self-end" asChild>
@@ -32,17 +60,62 @@ export default function Score({ team }: IProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-center">Input score {team}</DialogTitle>
-          <form className="flex flex-col gap-2">
-            <fieldset className="flex flex-col items-start">
-              <label>Score</label>
-              <Input placeholder="ex. 10" type="number" name="score" />
-            </fieldset>
-            <DialogClose asChild>
-              <Button type="button" className="mt-2" variant="default">
+          {cookies.get("boothType") === "file" ? (
+            <div>
+              <p>Hasil :</p>
+              <div className="relative w-full aspect-square">
+                <Image
+                  src={result}
+                  fill
+                  objectFit="contain"
+                  objectPosition="center"
+                  alt="image result"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="pt-8 w-full">
+              <Button asChild variant="outline" className="w-full">
+                <Link href={result} target="_blank">
+                  List hasil upload
+                </Link>
+              </Button>
+            </div>
+          )}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSave)}
+              className="flex flex-col gap-2"
+            >
+              <FormField
+                control={form.control}
+                name="score"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Score</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          id="score"
+                          placeholder="ex. 10"
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(Number(event.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <Button type="submit" className="mt-2" variant="default">
                 Save
               </Button>
-            </DialogClose>
-          </form>
+              <DialogClose ref={dialogCLoseRef} className="hidden" />
+            </form>
+          </Form>
         </DialogHeader>
       </DialogContent>
     </Dialog>
