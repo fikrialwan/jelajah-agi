@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { validateParticipantFormSchema as formSchema } from "~/lib/schema/judgeValidate.schema";
+import { validateParticipantFormSchema as formSchema } from "~/lib/schema/judgeAction.schema";
 
 import {
   Dialog,
@@ -31,8 +31,14 @@ import { child, get, onValue, ref, update } from "firebase/database";
 import { db } from "~/lib/api/firebase";
 import { useCookies } from "next-client-cookies";
 
-const CardTeam = (props: { name: string; status: string; score?: number }) => {
-  const { name, status, score } = props;
+const CardTeam = (props: {
+  name: string;
+  status: string;
+  score?: number;
+  result?: string;
+  id: string;
+}) => {
+  const { name, status, score, id, result } = props;
   return (
     <div className="py-5 px-6 rounded-lg shadow-md border flex justify-between items-center">
       <p>{name}</p>
@@ -40,7 +46,9 @@ const CardTeam = (props: { name: string; status: string; score?: number }) => {
         <Button variant="destructive">Validate</Button>
       )}
       {status === "process" && <Button variant="outline">on Process</Button>}
-      {status === "needInputScore" && <Score team={name} />}
+      {status === "needInputScore" && (
+        <Score team={name} id={id} result={result || ""} />
+      )}
       {status === "done" && (
         <p className="text-green-600 text-2xl font-semibold">{score}</p>
       )}
@@ -56,28 +64,24 @@ const ListTeamBooth = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      numberOfParticipants: 0,
-    },
   });
 
   useEffect(() => {
     const activityRef = ref(db, "activity");
     const unsubscribe = onValue(activityRef, async (snapshot) => {
       const activitiesTemp: IActivity[] = [];
-      const snapshotData = snapshot.val() as any[];
+      const snapshotData = Object.entries(snapshot.val()).map(
+        ([id, activity]) => ({ id, ...(activity as any) })
+      );
       if (snapshotData) {
-        let index = 0;
         for (const item of snapshotData) {
           if (item.booth === cookies.get("booth")) {
             const name = await get(child(ref(db), `account/${item.uid}/name`));
             activitiesTemp.push({
-              ...(item as Omit<IActivity, "name" | "id">),
+              ...(item as Omit<IActivity, "name">),
               name: name.val(),
-              id: index,
             });
           }
-          index++;
         }
       }
       setActivities(activitiesTemp);
@@ -116,6 +120,8 @@ const ListTeamBooth = () => {
                 name={activity.name}
                 status={activity.status}
                 score={activity.score}
+                id={activity.id}
+                result={activity.result}
               />
             </button>
           );
