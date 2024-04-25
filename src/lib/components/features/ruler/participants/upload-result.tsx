@@ -91,6 +91,10 @@ export default function UploadResult({
       isDone: participantStatus.isDone
         ? [...participantStatus.isDone, currentBooth]
         : [currentBooth],
+      isFinish:
+        participantStatus.isDone && participantStatus.isDone.length === 5
+          ? true
+          : false,
     };
     const updates: any = {};
     updates["/activity/" + activityId] = data;
