@@ -1,15 +1,16 @@
 import { atom } from "jotai";
 
 export interface IBooth {
-  id: number;
+  slug: number;
   name: string;
   image: string;
-  typeResult: "file" | "link";
+  type: "file" | "link";
 }
 
 export interface IParticipantStatus {
   isDone: number[];
-  currentBooth?: number;
+  currentBooth: number;
+  currentActivity: string;
   isScanned: number[];
   index: number;
   name: string;
@@ -20,7 +21,9 @@ export const ListBooth = atom<IBooth[] | []>([]);
 export const ParticipantStatus = atom<IParticipantStatus>({
   index: 0,
   name: "",
+  currentBooth: 0,
   type: "",
   isDone: [],
   isScanned: [],
+  currentActivity: "",
 });

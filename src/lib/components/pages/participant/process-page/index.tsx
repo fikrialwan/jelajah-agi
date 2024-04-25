@@ -12,11 +12,13 @@ import UploadResult from "~/lib/components/features/ruler/participants/upload-re
 import { db } from "~/lib/api/firebase";
 import { child, ref, get, onValue } from "firebase/database";
 import { ListBooth, ParticipantStatus } from "~/lib/stores/app.atom";
+import { CheckCircle2Icon } from "lucide-react";
 
 const ParticipantProcess = () => {
   const [screen, setScreen] = useState<"current" | "process">("current");
   const [listBooth, setListBooth] = useAtom(ListBooth);
   const [participantStatus, setParticipantStatus] = useAtom(ParticipantStatus);
+  const [currentActivity, setCurrentActivity] = useState<any>({});
   const cookies = useCookies();
   const uid = cookies.get("uid");
   const router = useRouter();
@@ -25,14 +27,25 @@ const ParticipantProcess = () => {
     const dbRef = ref(db);
     get(child(dbRef, "booth")).then((snapshot) => {
       if (snapshot.exists()) {
+        console.log(snapshot.val(), "user");
         setListBooth(snapshot.val());
       }
     });
     const statusUserRef = ref(db, `account/${uid}`);
     const unSubscribe = onValue(statusUserRef, async (snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot.val(), "masuk");
         setParticipantStatus(snapshot.val());
+        const { currentActivity } = snapshot.val();
+        if (currentActivity) {
+          onValue(
+            ref(db, `activity/${currentActivity}`),
+            async (snapshotActivity) => {
+              if (snapshotActivity.exists()) {
+                setCurrentActivity(snapshotActivity.val());
+              }
+            }
+          );
+        }
       }
     });
 
@@ -43,18 +56,17 @@ const ParticipantProcess = () => {
 
   const currentIndex = participantStatus.currentBooth
     ? participantStatus.currentBooth
-    : participantStatus.index;
+    : participantStatus.index % 6;
   const currentBooth = listBooth[currentIndex];
-  // const currentBooth = listBooth.fil
+
+  console.log("participantStatus", participantStatus);
 
   return (
     <section className="h-[calc(100%-82px)]">
       {listBooth.length ? (
         <>
           <div className="flex justify-end gap-2">
-            {participantStatus.isScanned?.includes(currentIndex) ? (
-              <UploadResult typeResult={currentBooth.typeResult} />
-            ) : (
+            {!participantStatus.isScanned?.includes(currentIndex) && (
               <Button
                 // variant={"default"}
                 onClick={() => router.push("/participants/scan-qr")}
@@ -81,7 +93,33 @@ const ParticipantProcess = () => {
           </div>
           <div className="flex justify-center items-center flex-col h-full gap-3">
             {screen === "current" ? (
-              <CurrentBooth booth={currentBooth} />
+              <>
+                {participantStatus.isDone.length === 6 ? (
+                  <>
+                    <CheckCircle2Icon
+                      className="text-green-600"
+                      width={100}
+                      height={100}
+                    />
+                    <p>Telah Melakukan Semua!</p>
+                  </>
+                ) : (
+                  <CurrentBooth booth={currentBooth} />
+                )}
+                {currentActivity?.status === "needValidation" ? (
+                  <p>Mohon menunggu validasi dari Juri...</p>
+                ) : (
+                  currentActivity?.status === "process" && (
+                    <UploadResult
+                      typeResult={currentBooth.type}
+                      activityId={participantStatus.currentActivity}
+                      activity={currentActivity}
+                      participantStatus={participantStatus}
+                      uid={uid as string}
+                    />
+                  )
+                )}
+              </>
             ) : (
               <ListProcess
                 listProcess={listBooth.map((item, index: number) => {
