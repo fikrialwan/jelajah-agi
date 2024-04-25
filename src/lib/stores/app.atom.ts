@@ -15,6 +15,7 @@ export interface IParticipantStatus {
   index: number;
   name: string;
   type: string;
+  isFinish: boolean;
 }
 
 export const ListBooth = atom<IBooth[] | []>([]);
@@ -26,4 +27,5 @@ export const ParticipantStatus = atom<IParticipantStatus>({
   isDone: [],
   isScanned: [],
   currentActivity: "",
+  isFinish: false,
 });

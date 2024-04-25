@@ -94,7 +94,7 @@ const ParticipantProcess = () => {
           <div className="flex justify-center items-center flex-col h-full gap-3">
             {screen === "current" ? (
               <>
-                {participantStatus.isDone.length === 6 ? (
+                {participantStatus.isFinish ? (
                   <>
                     <CheckCircle2Icon
                       className="text-green-600"
