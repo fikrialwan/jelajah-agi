@@ -42,7 +42,7 @@ export const ScanQr = () => {
 
   const currentIndex = participantStatus.currentBooth
     ? participantStatus.currentBooth
-    : participantStatus.index;
+    : participantStatus.index % 6;
   const currentBooth = listBooth[currentIndex];
 
   useEffect(() => {
@@ -57,27 +57,35 @@ export const ScanQr = () => {
         // Check if decodedText === currentBooth
         if (decodedText === currentBooth.slug) {
           // set Firebase for current booth already scanned
-          const userUpdateData = {
-            ...participantStatus,
-            currentBooth: currentIndex,
-            isScanned: participantStatus.isScanned
-              ? participantStatus.isScanned.push(currentIndex)
-              : [currentIndex],
-          };
+
           const dataActivty = {
             startDate: new Date(),
             booth: currentBooth.slug,
             endDate: "-",
             score: 0,
-            status: "process",
+            status: "needValidation",
             totalMember: 0,
             uid,
           };
-          const newActivityRef = push(ref(db, "activity"));
-          set(newActivityRef, dataActivty);
+          const newActivityRef = push(ref(db, `activity`));
+          const newActivityKey = newActivityRef.key;
+          update(newActivityRef, dataActivty);
+
+          const userUpdateData = {
+            ...participantStatus,
+            currentBooth: currentIndex,
+            currentActivity: newActivityKey,
+            isScanned: participantStatus.isScanned
+              ? participantStatus.isScanned.push(currentIndex)
+              : [currentIndex],
+          };
           const updates: any = {};
           updates["/account/" + uid] = userUpdateData;
           update(ref(db), updates);
+          toast({
+            variant: "success",
+            title: "Success Scan Booth",
+          });
         } else {
           toast({
             variant: "destructive",

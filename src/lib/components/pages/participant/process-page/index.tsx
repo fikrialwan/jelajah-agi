@@ -17,6 +17,7 @@ const ParticipantProcess = () => {
   const [screen, setScreen] = useState<"current" | "process">("current");
   const [listBooth, setListBooth] = useAtom(ListBooth);
   const [participantStatus, setParticipantStatus] = useAtom(ParticipantStatus);
+  const [currentActivity, setCurrentActivity] = useState<any>();
   const cookies = useCookies();
   const uid = cookies.get("uid");
   const router = useRouter();
@@ -25,6 +26,7 @@ const ParticipantProcess = () => {
     const dbRef = ref(db);
     get(child(dbRef, "booth")).then((snapshot) => {
       if (snapshot.exists()) {
+        console.log(snapshot.val(), "user");
         setListBooth(snapshot.val());
       }
     });
@@ -32,6 +34,17 @@ const ParticipantProcess = () => {
     const unSubscribe = onValue(statusUserRef, async (snapshot) => {
       if (snapshot.exists()) {
         setParticipantStatus(snapshot.val());
+        const { currentActivity } = snapshot.val();
+        if (currentActivity) {
+          onValue(
+            ref(db, `activity/${currentActivity}`),
+            async (snapshotActivity) => {
+              if (snapshotActivity.exists()) {
+                setCurrentActivity(snapshotActivity.val());
+              }
+            }
+          );
+        }
       }
     });
 
@@ -42,18 +55,17 @@ const ParticipantProcess = () => {
 
   const currentIndex = participantStatus.currentBooth
     ? participantStatus.currentBooth
-    : participantStatus.index;
+    : participantStatus.index % 6;
   const currentBooth = listBooth[currentIndex];
-  // const currentBooth = listBooth.fil
+
+  console.log("participantStatus", participantStatus);
 
   return (
     <section className="h-[calc(100%-82px)]">
       {listBooth.length ? (
         <>
           <div className="flex justify-end gap-2">
-            {participantStatus.isScanned?.includes(currentIndex) ? (
-              <UploadResult typeResult={currentBooth.type} />
-            ) : (
+            {!participantStatus.isScanned?.includes(currentIndex) && (
               <Button
                 // variant={"default"}
                 onClick={() => router.push("/participants/scan-qr")}
@@ -80,7 +92,16 @@ const ParticipantProcess = () => {
           </div>
           <div className="flex justify-center items-center flex-col h-full gap-3">
             {screen === "current" ? (
-              <CurrentBooth booth={currentBooth} />
+              <>
+                <CurrentBooth booth={currentBooth} />
+                {currentActivity?.status === "needValidation" ? (
+                  <p>Mohon menunggu validasi dari Juri...</p>
+                ) : (
+                  currentActivity?.status === "process" && (
+                    <UploadResult typeResult={currentBooth.type} />
+                  )
+                )}
+              </>
             ) : (
               <ListProcess
                 listProcess={listBooth.map((item, index: number) => {

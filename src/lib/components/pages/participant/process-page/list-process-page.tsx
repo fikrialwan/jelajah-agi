@@ -11,8 +11,8 @@ export const ListProcess = ({ listProcess }: { listProcess: IBooth[] }) => {
     : participantStatus.index;
 
   const sortedBooth = [
-    ...listProcess.slice(participantStatus.index),
-    ...listProcess.slice(0, participantStatus.index),
+    ...listProcess.slice(participantStatus.index % 6),
+    ...listProcess.slice(0, participantStatus.index % 6),
   ];
 
   return (
