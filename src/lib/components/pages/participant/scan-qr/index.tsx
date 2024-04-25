@@ -76,7 +76,7 @@ export const ScanQr = () => {
             currentBooth: currentIndex,
             currentActivity: newActivityKey,
             isScanned: participantStatus.isScanned
-              ? participantStatus.isScanned.push(currentIndex)
+              ? [...participantStatus.isScanned, currentIndex]
               : [currentIndex],
           };
           const updates: any = {};

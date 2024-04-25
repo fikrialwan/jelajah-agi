@@ -12,12 +12,13 @@ import UploadResult from "~/lib/components/features/ruler/participants/upload-re
 import { db } from "~/lib/api/firebase";
 import { child, ref, get, onValue } from "firebase/database";
 import { ListBooth, ParticipantStatus } from "~/lib/stores/app.atom";
+import { CheckCircle2Icon } from "lucide-react";
 
 const ParticipantProcess = () => {
   const [screen, setScreen] = useState<"current" | "process">("current");
   const [listBooth, setListBooth] = useAtom(ListBooth);
   const [participantStatus, setParticipantStatus] = useAtom(ParticipantStatus);
-  const [currentActivity, setCurrentActivity] = useState<any>();
+  const [currentActivity, setCurrentActivity] = useState<any>({});
   const cookies = useCookies();
   const uid = cookies.get("uid");
   const router = useRouter();
@@ -93,12 +94,29 @@ const ParticipantProcess = () => {
           <div className="flex justify-center items-center flex-col h-full gap-3">
             {screen === "current" ? (
               <>
-                <CurrentBooth booth={currentBooth} />
+                {participantStatus.isDone.length === 6 ? (
+                  <>
+                    <CheckCircle2Icon
+                      className="text-green-600"
+                      width={100}
+                      height={100}
+                    />
+                    <p>Telah Melakukan Semua!</p>
+                  </>
+                ) : (
+                  <CurrentBooth booth={currentBooth} />
+                )}
                 {currentActivity?.status === "needValidation" ? (
                   <p>Mohon menunggu validasi dari Juri...</p>
                 ) : (
                   currentActivity?.status === "process" && (
-                    <UploadResult typeResult={currentBooth.type} />
+                    <UploadResult
+                      typeResult={currentBooth.type}
+                      activityId={participantStatus.currentActivity}
+                      activity={currentActivity}
+                      participantStatus={participantStatus}
+                      uid={uid as string}
+                    />
                   )
                 )}
               </>
