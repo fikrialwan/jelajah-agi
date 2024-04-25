@@ -12,7 +12,7 @@ import {
 } from "~/lib/components/ui/alert-dialog";
 import { Button } from "~/lib/components/ui/button";
 
-export default function UserDelete() {
+export default function JudgeDelete() {
   return (
     <AlertDialog>
       <AlertDialogTrigger aria-label="DeleteButton">

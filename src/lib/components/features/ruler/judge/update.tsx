@@ -12,7 +12,7 @@ import {
 } from "~/lib/components/ui/dialog";
 import { Input } from "~/lib/components/ui/input";
 
-export default function UserUpdate() {
+export default function JudgeUpdate() {
   return (
     <Dialog>
       <DialogTrigger aria-label="EditButton">
@@ -20,7 +20,7 @@ export default function UserUpdate() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-center">Update User</DialogTitle>
+          <DialogTitle className="text-center">Update Judge</DialogTitle>
           <form className="flex flex-col gap-2">
             <fieldset className="flex flex-col items-start">
               <label>Name</label>

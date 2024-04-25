@@ -1,14 +1,14 @@
 import { Store } from "lucide-react";
 import { Card, CardContent, CardTitle } from "~/lib/components/ui/card";
-import UserDelete from "./delete";
-import UserUpdate from "./update";
+import JudgeDelete from "./delete";
+import JudgeUpdate from "./update";
 
 interface IProps {
   name: string;
   booth?: string;
 }
 
-export default function CardUser({ name, booth }: IProps) {
+export default function CardJudge({ name, booth }: IProps) {
   return (
     <li aria-label="CardUser">
       <Card>
@@ -21,8 +21,8 @@ export default function CardUser({ name, booth }: IProps) {
               </p>
             )}
           </div>
-          <UserUpdate />
-          <UserDelete />
+          <JudgeUpdate />
+          <JudgeDelete />
         </CardContent>
       </Card>
     </li>
