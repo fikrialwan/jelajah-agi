@@ -27,7 +27,6 @@ const ParticipantProcess = () => {
     const dbRef = ref(db);
     get(child(dbRef, "booth")).then((snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot.val(), "user");
         setListBooth(snapshot.val());
       }
     });
@@ -59,21 +58,19 @@ const ParticipantProcess = () => {
     : participantStatus.index % 6;
   const currentBooth = listBooth[currentIndex];
 
-  console.log("participantStatus", participantStatus);
-
   return (
     <section className="h-[calc(100%-82px)]">
       {listBooth.length ? (
         <>
           <div className="flex justify-end gap-2">
-            {!participantStatus.isScanned?.includes(currentIndex) && (
+            {/* {!participantStatus.isScanned?.includes(currentIndex) && (
               <Button
                 // variant={"default"}
                 onClick={() => router.push("/participants/scan-qr")}
               >
                 Scan QR
               </Button>
-            )}
+            )} */}
             <Button
               // variant={"outline"}
               onClick={() => {

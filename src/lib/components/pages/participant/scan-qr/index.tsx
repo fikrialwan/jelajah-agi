@@ -119,10 +119,12 @@ export const ScanQr = () => {
     };
   }, [showQRScanner]);
 
-  console.log("currentBooth", currentBooth);
   return (
     <section className="h-[calc(100%-82px)]">
-      <Button onClick={() => router.push("/participants")}>Back to List</Button>
+      {/* <Button onClick={() => router.push("/participants")}>Back to List</Button> */}
+      <div className="text-center font-bold uppercase text-xl">
+        {currentBooth?.name}
+      </div>
       <div className="flex items-center justify-center h-full flex-col">
         <div
           id="scan-qr-reader"
