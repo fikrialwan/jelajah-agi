@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { ref, update } from "firebase/database";
+import { child, get, ref, update } from "firebase/database";
 import { useCookies } from "next-client-cookies";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,6 +28,8 @@ import {
   FormMessage,
 } from "../../ui/form";
 import { useRef } from "react";
+import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
+import { useToast } from "../../ui/use-toast";
 
 interface IProps {
   team: string;
@@ -37,6 +39,7 @@ interface IProps {
 
 export default function Score({ team, result, id }: IProps) {
   const cookies = useCookies();
+  const { toast } = useToast();
 
   const dialogCLoseRef = useRef<HTMLButtonElement>(null);
 
@@ -44,11 +47,20 @@ export default function Score({ team, result, id }: IProps) {
     resolver: zodResolver(inputScoreFormSchema),
   });
 
-  const handleSave = (values: z.infer<typeof inputScoreFormSchema>) => {
-    update(ref(db, `activity/${id}`), {
-      status: "done",
-      score: values.score,
-    });
+  const handleSave = async (values: z.infer<typeof inputScoreFormSchema>) => {
+    const endCountdown = await get(child(ref(db), "endCountdown"));
+    if (checkCountdownValid(endCountdown.val())) {
+      update(ref(db, `activity/${id}`), {
+        status: "done",
+        score: values.score,
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Failed.",
+        description: "Waktu telah habis.",
+      });
+    }
     dialogCLoseRef.current?.click();
   };
 

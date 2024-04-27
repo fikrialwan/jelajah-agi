@@ -11,8 +11,8 @@ export const ListProcess = ({ listProcess }: { listProcess: IBooth[] }) => {
     : participantStatus.index;
 
   const sortedBooth = [
-    ...listProcess.slice(participantStatus.index),
-    ...listProcess.slice(0, participantStatus.index),
+    ...listProcess.slice(participantStatus.index % 6),
+    ...listProcess.slice(0, participantStatus.index % 6),
   ];
 
   return (
@@ -21,7 +21,7 @@ export const ListProcess = ({ listProcess }: { listProcess: IBooth[] }) => {
         return (
           <div
             className={`flex justify-between p-4 rounded-lg w-full border-2 shadow-lg ${
-              item.indexBooth === currentIndex
+              item.indexBooth === currentIndex && !participantStatus.isFinish
                 ? "border-primary"
                 : participantStatus.isDone?.includes(item.indexBooth)
                 ? "border-green-600"
@@ -39,7 +39,10 @@ export const ListProcess = ({ listProcess }: { listProcess: IBooth[] }) => {
               />
               <p
                 className={`${
-                  currentIndex === item.indexBooth ? "font-bold" : ""
+                  currentIndex === item.indexBooth &&
+                  !participantStatus.isFinish
+                    ? "font-bold"
+                    : ""
                 }`}
               >
                 {item.name}

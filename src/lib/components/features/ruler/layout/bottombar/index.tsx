@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "~/lib/styles/utils";
 import BottomNavLink from "./navlink";
-import { Store, User, UserCheck } from "lucide-react";
+import { Clock, Store, User, UserCheck } from "lucide-react";
 
 export default function RulerBottombar() {
   return (
@@ -20,6 +20,9 @@ export default function RulerBottombar() {
         </BottomNavLink>
         <BottomNavLink href="/ruler/participant">
           <User />
+        </BottomNavLink>
+        <BottomNavLink href="/ruler/countdown">
+          <Clock />
         </BottomNavLink>
       </ul>
     </nav>

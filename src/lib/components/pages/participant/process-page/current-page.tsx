@@ -1,5 +1,4 @@
 import { IBooth } from "~/lib/stores/app.atom";
-import { TrophyIcon } from "lucide-react";
 import Image from "next/image";
 
 const CurrentBooth = (props: { booth: IBooth }) => {
