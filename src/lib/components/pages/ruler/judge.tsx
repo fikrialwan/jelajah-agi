@@ -44,7 +44,7 @@ export default function Judge() {
       <JugeAdd />
       <ul className="flex flex-col gap-3">
         {accounts.map(({ name, booth, id }) => (
-          <CardJudge key={id} name={name} booth={booth} />
+          <CardJudge key={id} uid={id} name={name} booth={booth} />
         ))}
       </ul>
     </div>

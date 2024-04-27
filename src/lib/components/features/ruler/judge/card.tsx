@@ -6,9 +6,10 @@ import JudgeUpdate from "./update";
 interface IProps {
   name: string;
   booth?: string;
+  uid: string;
 }
 
-export default function CardJudge({ name, booth }: IProps) {
+export default function CardJudge({ name, booth, uid }: IProps) {
   return (
     <li aria-label="CardUser">
       <Card>
@@ -22,7 +23,7 @@ export default function CardJudge({ name, booth }: IProps) {
             )}
           </div>
           <JudgeUpdate />
-          <JudgeDelete />
+          <JudgeDelete uid={uid} />
         </CardContent>
       </Card>
     </li>

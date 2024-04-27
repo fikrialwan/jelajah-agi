@@ -1,3 +1,5 @@
+"use client";
+
 import { Trash } from "lucide-react";
 import {
   AlertDialog,
@@ -11,8 +13,28 @@ import {
   AlertDialogTrigger,
 } from "~/lib/components/ui/alert-dialog";
 import { Button } from "~/lib/components/ui/button";
+import { useRef } from "react";
+import { useToast } from "~/lib/components/ui/use-toast";
+import { ref, remove } from "firebase/database";
+import { db } from "~/lib/api/firebase";
 
-export default function JudgeDelete() {
+interface IProps {
+  uid: string;
+}
+
+export default function JudgeDelete({ uid }: IProps) {
+  const { toast } = useToast();
+  const buttonCloseRef = useRef<HTMLButtonElement>(null);
+
+  async function actionDelete() {
+    remove(ref(db, `account/${uid}`));
+    toast({
+      variant: "success",
+      title: "Success",
+      description: "Delete successfully",
+    });
+  }
+
   return (
     <AlertDialog>
       <AlertDialogTrigger aria-label="DeleteButton">
@@ -22,17 +44,22 @@ export default function JudgeDelete() {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure ?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your user
-            account and remove your data from our servers.
+            This action cannot be undone. This will permanently delete your
+            judge account and remove your data from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <Button asChild variant="outline">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
           </Button>
-          <Button asChild variant="destructive" className="mb-2 md:m-0">
-            <AlertDialogAction>Yes</AlertDialogAction>
+          <Button
+            variant="destructive"
+            className="mb-2 md:m-0"
+            onClick={actionDelete}
+          >
+            Yes
           </Button>
+          <AlertDialogAction ref={buttonCloseRef} className="hidden" />
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
