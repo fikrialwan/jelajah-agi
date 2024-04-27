@@ -61,8 +61,9 @@ export default function Countdown({ isRuler }: IProps) {
   }, []);
 
   const handleStart = () => {
+    const minutesAdded = parseInt(process.env.NEXT_PUBLIC_COUNTDOWN || "0");
     const now = new Date();
-    now.setHours(now.getHours() + 2);
+    now.setMinutes(now.getMinutes() + minutesAdded);
     set(ref(db, "endCountdown"), now.toString());
   };
 
