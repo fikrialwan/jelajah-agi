@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "~/lib/styles/utils";
 import SideNavLink from "./navlink";
-import { Store, User } from "lucide-react";
+import { Store, User, Clock } from "lucide-react";
 
 export default function RulerSidebar() {
   return (
@@ -22,6 +22,9 @@ export default function RulerSidebar() {
           </SideNavLink>
           <SideNavLink icon={<User />} href="/ruler/user">
             User
+          </SideNavLink>
+          <SideNavLink icon={<Clock />} href="/ruler/countdown">
+            Countdown
           </SideNavLink>
         </ul>
       </nav>
