@@ -1,6 +1,6 @@
-# Jelajah AGI
+# Jelajah Amaliah
 
-Jelajah AGI website platform is a 🚧 Work in Progress.
+Jelajah Amaliah website platform is a 🚧 Work in Progress.
 
 Check out:
 

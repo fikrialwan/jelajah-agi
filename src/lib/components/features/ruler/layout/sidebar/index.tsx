@@ -13,7 +13,7 @@ export default function RulerSidebar() {
       )}
     >
       <h1 className="text-primary-foreground font-bold text-2xl tracking-wider">
-        <Link href="/">Jelajah AGI</Link>
+        <Link href="/">Jelajah Amaliah</Link>
       </h1>
       <nav>
         <ul className="flex flex-col gap-4">

@@ -7,8 +7,8 @@ import { fontJakarta } from "~/lib/styles/font";
 import "~/lib/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "Jelajah AGI",
-  description: "Jelajah AGI Website",
+  title: "Jelajah Amaliah",
+  description: "Jelajah Amaliah Website",
 };
 
 export default function RootLayout({
