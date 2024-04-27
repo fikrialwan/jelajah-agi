@@ -3,10 +3,12 @@
 import CardJudge from "../../features/ruler/judge/card";
 import JugeAdd from "../../features/ruler/judge/add";
 import { useEffect, useState } from "react";
-import { onValue, ref } from "firebase/database";
+import { child, get, onValue, ref, update } from "firebase/database";
 import { db } from "~/lib/api/firebase";
 import CardParticipant from "../../features/ruler/participant/card";
 import ParticipantAdd from "../../features/ruler/participant/add";
+import { Button } from "../../ui/button";
+import { useToast } from "../../ui/use-toast";
 
 interface IAccount {
   id: string;
@@ -15,6 +17,8 @@ interface IAccount {
 }
 
 export default function Participant() {
+  const { toast } = useToast();
+
   const [accounts, setAccounts] = useState<IAccount[]>([]);
 
   useEffect(() => {
@@ -39,10 +43,35 @@ export default function Participant() {
     };
   }, []);
 
+  async function handleGenerate() {
+    const snapshot = await get(child(ref(db), "account"));
+    const account = Object.entries(snapshot.val()).map(([id, account]) => ({
+      id,
+      ...(account as any),
+    }));
+    let index = 0;
+    for (const item of account) {
+      if (item.type === "participants") {
+        await update(ref(db, `account/${item.id}`), {
+          index,
+        });
+        index++;
+      }
+    }
+    toast({
+      variant: "success",
+      title: "Success",
+      description: "Generate index successfully",
+    });
+  }
+
   return (
     <div className="flex flex-col gap-4 py-3 px-5">
       <h1 className="text-3xl font-semibold text-center">List Participant</h1>
-      <ParticipantAdd />
+      <div className="flex flex-row justify-between">
+        <Button onClick={handleGenerate}>Generete Index</Button>
+        <ParticipantAdd />
+      </div>
       <ul className="flex flex-col gap-3">
         {accounts.map(({ name, id }) => (
           <CardParticipant key={id} uid={id} name={name} />
