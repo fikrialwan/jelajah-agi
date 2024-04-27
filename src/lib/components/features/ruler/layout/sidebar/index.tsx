@@ -20,8 +20,8 @@ export default function RulerSidebar() {
           <SideNavLink isIndex href="/ruler/booth" icon={<Store />}>
             Booth
           </SideNavLink>
-          <SideNavLink icon={<User />} href="/ruler/user">
-            User
+          <SideNavLink icon={<User />} href="/ruler/judge">
+            Judge
           </SideNavLink>
           <SideNavLink icon={<Clock />} href="/ruler/countdown">
             Countdown
