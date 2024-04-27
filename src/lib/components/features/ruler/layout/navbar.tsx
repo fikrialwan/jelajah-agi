@@ -52,7 +52,7 @@ export default function RulerNavbar() {
           "font-bold text-xl tracking-wide flex-1"
         )}
       >
-        Jelajah AGI
+        Jelajah Amaliah
       </h1>
       <AlertDialog>
         <Button
