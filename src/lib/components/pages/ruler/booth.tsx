@@ -1,15 +1,37 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import CardBooth from "../../features/ruler/booth/card";
-import { BoothData } from "~/data/booth-dummy";
-import BoothAdd from "../../features/ruler/booth/add";
+import { onValue, ref } from "firebase/database";
+import { db } from "~/lib/api/firebase";
+
+interface IBooth {
+  image: string;
+  name: string;
+  slug: string;
+}
 
 function Booth() {
+  const [booths, setBooths] = useState<IBooth[]>([]);
+
+  useEffect(() => {
+    const boothRef = ref(db, "booth");
+    const unsubscribe = onValue(boothRef, (snapshot) => {
+      setBooths(snapshot.val() as IBooth[]);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   return (
     <div className="flex flex-col gap-4 py-3 px-5">
       <h1 className="text-3xl font-semibold text-center">List booth</h1>
-      <BoothAdd />
+      {/* <BoothAdd />  */}
       <ul className="flex flex-col gap-3">
-        {BoothData.map(({ title, img, pic }, index: number) => (
-          <CardBooth pic={pic} key={index} title={title} img={img} />
+        {booths.map(({ image, name }, index: number) => (
+          <CardBooth key={index} title={name} img={image} />
         ))}
       </ul>
     </div>
