@@ -12,7 +12,7 @@ export default function RulerLayout({
       <RulerSidebar />
       <div className="h-screen w-full bg-background md:rounded-s-2xl">
         <RulerNavbar />
-        <main>{children}</main>
+        <main className="pb-14">{children}</main>
         <RulerBottombar />
       </div>
     </div>
