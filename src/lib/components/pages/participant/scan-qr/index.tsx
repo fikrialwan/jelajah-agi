@@ -119,7 +119,7 @@ export const ScanQr = () => {
 
     if (showQRScanner) {
       html5QrCode.start(
-        { facingMode: "user" },
+        { facingMode: "environment" },
         { fps: 10, qrbox: { height: 250, width: 250 } },
         qrCodeSuccessCallback,
         qrCodeErrorCallback
