@@ -65,6 +65,7 @@ export const ScanQr = () => {
             score: 0,
             status: "needValidation",
             totalMember: 0,
+            teamName: participantStatus.name,
             uid,
           };
           const newActivityRef = push(ref(db, `activity`));

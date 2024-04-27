@@ -18,6 +18,17 @@ export interface IParticipantStatus {
   isFinish: boolean;
 }
 
+export interface IActivity {
+  booth: string;
+  endDate: string;
+  result: string;
+  score: number;
+  startDate: string;
+  status: string;
+  totalMember: number;
+  uid: string;
+}
+
 export const ListBooth = atom<IBooth[] | []>([]);
 export const ParticipantStatus = atom<IParticipantStatus>({
   index: 0,
@@ -29,3 +40,5 @@ export const ParticipantStatus = atom<IParticipantStatus>({
   currentActivity: "",
   isFinish: false,
 });
+
+export const AllActivity = atom<IActivity[]>([]);
