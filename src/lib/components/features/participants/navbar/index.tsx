@@ -7,35 +7,43 @@ import {
   ListChecks,
   UserCircle,
 } from "lucide-react";
+import { useCookies } from "next-client-cookies";
 
 import { useRouter, usePathname } from "next/navigation";
 
 const NavbarParticipant = () => {
+  const cookies = useCookies();
+  const uid = cookies.get("uid");
   const dataMenu = [
     {
       id: 0,
       href: "/",
       icon: <HomeIcon size={24} />,
+      needAuth: false,
     },
     {
       id: 0,
       href: "/clock",
       icon: <ClockIcon size={24} />,
+      needAuth: false,
     },
     {
       id: 0,
       href: "/participants/scan-qr",
       icon: <ScanBarcodeIcon size={24} />,
+      needAuth: true,
     },
     {
       id: 0,
       href: "/participants",
       icon: <ListChecks size={24} />,
+      needAuth: true,
     },
     {
       id: 0,
       href: "/profile",
       icon: <UserCircle size={24} />,
+      needAuth: false,
     },
   ];
 
@@ -48,7 +56,13 @@ const NavbarParticipant = () => {
           return (
             <li
               key={menu.id}
-              onClick={() => router.push(menu.href)}
+              onClick={() => {
+                if (!menu.needAuth || uid) {
+                  router.push(menu.href);
+                } else {
+                  router.replace("/login");
+                }
+              }}
               className={`flex items-center justify-center size-full border-x border-x-primary ${
                 pathname === menu.href
                   ? "bg-primary text-white"

@@ -31,7 +31,20 @@ export const ScanQr = () => {
     const statusUserRef = ref(db, `account/${uid}`);
     const unSubscribe = onValue(statusUserRef, async (snapshot) => {
       if (snapshot.exists()) {
-        setParticipantStatus(snapshot.val());
+        const participant = snapshot.val();
+        setParticipantStatus(participant);
+
+        if (
+          participant.isScanned &&
+          participant?.isScanned.includes(participant.currentBooth)
+        ) {
+          toast({
+            variant: "destructive",
+            title:
+              "Upload Hasil Booth Saat Ini Sebelum Scan Booth Selanjutnya!",
+          });
+          router.replace("/participants");
+        }
       }
     });
 
