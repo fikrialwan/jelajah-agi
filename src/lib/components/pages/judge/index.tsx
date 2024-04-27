@@ -44,7 +44,7 @@ const CardTeam = (props: {
   return (
     <div className="py-5 px-6 rounded-lg shadow-md border flex justify-between items-center">
       <p>{name}</p>
-      {status === "validation" && (
+      {status === "needValidation" && (
         <Button variant="destructive">Validate</Button>
       )}
       {status === "process" && <Button variant="outline">on Process</Button>}
@@ -122,7 +122,7 @@ const ListTeamBooth = () => {
               key={index}
               className="mb-5"
               onClick={() => {
-                if (activity.status === "validation") {
+                if (activity.status === "needValidation") {
                   setDialogTeam(activity);
                   setOpenDialog(true);
                 }
