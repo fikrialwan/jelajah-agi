@@ -30,6 +30,8 @@ import { IActivity } from "~/lib/interfaces/activity.interface";
 import { child, get, onValue, ref, update } from "firebase/database";
 import { db } from "~/lib/api/firebase";
 import { useCookies } from "next-client-cookies";
+import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
+import { useToast } from "../../ui/use-toast";
 
 const CardTeam = (props: {
   name: string;
@@ -58,6 +60,7 @@ const CardTeam = (props: {
 
 const ListTeamBooth = () => {
   const cookies = useCookies();
+  const { toast } = useToast();
 
   const [activities, setActivities] = useState<IActivity[]>([]);
   const [dialogTeam, setDialogTeam] = useState<IActivity | null>(null);
@@ -92,14 +95,23 @@ const ListTeamBooth = () => {
     };
   }, [cookies]);
 
-  const handleSubmitValidate = (values: z.infer<typeof formSchema>) => {
-    update(ref(db, `activity/${dialogTeam?.id}`), {
-      status: "process",
-      startDate: new Date(),
-      totalMember: values.numberOfParticipants,
-    });
-    setDialogTeam(null);
-    setOpenDialog(false);
+  const handleSubmitValidate = async (values: z.infer<typeof formSchema>) => {
+    const endCountdown = await get(child(ref(db), "endCountdown"));
+    if (checkCountdownValid(endCountdown.val())) {
+      update(ref(db, `activity/${dialogTeam?.id}`), {
+        status: "process",
+        startDate: new Date(),
+        totalMember: values.numberOfParticipants,
+      });
+      setDialogTeam(null);
+      setOpenDialog(false);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Failed.",
+        description: "Waktu telah habis.",
+      });
+    }
   };
   return (
     <>
