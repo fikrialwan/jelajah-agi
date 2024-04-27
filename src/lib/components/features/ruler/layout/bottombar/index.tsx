@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "~/lib/styles/utils";
 import BottomNavLink from "./navlink";
-import { Store, User } from "lucide-react";
+import { Store, User, UserCheck } from "lucide-react";
 
 export default function RulerBottombar() {
   return (
@@ -15,7 +15,10 @@ export default function RulerBottombar() {
         <BottomNavLink isIndex href="/ruler/booth">
           <Store />
         </BottomNavLink>
-        <BottomNavLink href="/ruler/user">
+        <BottomNavLink href="/ruler/judge">
+          <UserCheck />
+        </BottomNavLink>
+        <BottomNavLink href="/ruler/participant">
           <User />
         </BottomNavLink>
       </ul>
