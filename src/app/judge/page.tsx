@@ -1,10 +1,14 @@
+import RulerNavbar from "~/lib/components/features/ruler/layout/navbar";
 import { ListTeamBooth } from "~/lib/components/pages/judge";
 
 const ListTeamJudgePage = () => {
   return (
-    <div className="container mt-[50px] pt-8">
-      <ListTeamBooth />
-    </div>
+    <>
+      <RulerNavbar />
+      <div className="container pt-8">
+        <ListTeamBooth />
+      </div>
+    </>
   );
 };
 
