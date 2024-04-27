@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { cn } from "~/lib/styles/utils";
 import SideNavLink from "./navlink";
-import { Store, User, UserCheck } from "lucide-react";
 import { Store, User, Clock, UserCheck } from "lucide-react";
 
 export default function RulerSidebar() {
