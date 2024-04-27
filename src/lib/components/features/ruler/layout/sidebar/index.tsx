@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "~/lib/styles/utils";
 import SideNavLink from "./navlink";
-import { Store, User, Clock } from "lucide-react";
+import { Store, User, Clock, UserCheck } from "lucide-react";
 
 export default function RulerSidebar() {
   return (
@@ -20,8 +20,11 @@ export default function RulerSidebar() {
           <SideNavLink isIndex href="/ruler/booth" icon={<Store />}>
             Booth
           </SideNavLink>
-          <SideNavLink icon={<User />} href="/ruler/judge">
+          <SideNavLink icon={<UserCheck />} href="/ruler/judge">
             Judge
+          </SideNavLink>
+          <SideNavLink icon={<User />} href="/ruler/participant">
+            Participant
           </SideNavLink>
           <SideNavLink icon={<Clock />} href="/ruler/countdown">
             Countdown

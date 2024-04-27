@@ -2,9 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { onValue, ref, set } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { PencilIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { db } from "~/lib/api/firebase";
@@ -24,20 +24,8 @@ import {
   FormLabel,
 } from "~/lib/components/ui/form";
 import { Input } from "~/lib/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/lib/components/ui/select";
 import { useToast } from "~/lib/components/ui/use-toast";
-import { judgeUpdateFormSchema } from "~/lib/schema/judge.schema";
-
-interface IBooth {
-  name: string;
-  slug: string;
-}
+import { participantUpdateFormSchema } from "~/lib/schema/participant.schema";
 
 interface IProps {
   uid: string;
@@ -45,51 +33,36 @@ interface IProps {
   booth?: string;
 }
 
-export default function JudgeUpdate({ uid, name, booth }: IProps) {
+export default function ParticipantUpdate({ uid, name, booth }: IProps) {
   const { toast } = useToast();
 
   const dialogCLoseRef = useRef<HTMLButtonElement>(null);
-  const [booths, setBooths] = useState<IBooth[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof judgeUpdateFormSchema>>({
-    resolver: zodResolver(judgeUpdateFormSchema),
+  const form = useForm<z.infer<typeof participantUpdateFormSchema>>({
+    resolver: zodResolver(participantUpdateFormSchema),
     defaultValues: {
       name,
-      booth,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof judgeUpdateFormSchema>) {
+  async function onSubmit(values: z.infer<typeof participantUpdateFormSchema>) {
     if (!isLoading) {
       setLoading(true);
-      set(ref(db, `account/${uid}`), {
-        booth: values.booth,
+      update(ref(db, `account/${uid}`), {
         name: values.name,
-        type: "judge",
       });
       form.reset();
       toast({
         variant: "success",
         title: "Success",
-        description: "Update judge account successfully",
+        description: "Update participant account successfully",
       });
 
       setLoading(false);
       dialogCLoseRef.current?.click();
     }
   }
-
-  useEffect(() => {
-    const boothRef = ref(db, "booth");
-    const unsubscribe = onValue(boothRef, (snapshot) => {
-      setBooths(snapshot.val() as IBooth[]);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
   return (
     <Dialog>
@@ -98,7 +71,7 @@ export default function JudgeUpdate({ uid, name, booth }: IProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-center">Update Judge</DialogTitle>
+          <DialogTitle className="text-center">Update participant</DialogTitle>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -112,32 +85,6 @@ export default function JudgeUpdate({ uid, name, booth }: IProps) {
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input placeholder="ex: odegaard" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="booth"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Booth</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {booths.map(({ name, slug }) => (
-                            <SelectItem key={slug} value={slug}>
-                              {name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
                     </FormControl>
                   </FormItem>
                 )}
