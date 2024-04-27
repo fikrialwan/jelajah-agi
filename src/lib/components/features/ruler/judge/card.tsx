@@ -22,7 +22,7 @@ export default function CardJudge({ name, booth, uid }: IProps) {
               </p>
             )}
           </div>
-          <JudgeUpdate />
+          <JudgeUpdate uid={uid} name={name} booth={booth} />
           <JudgeDelete uid={uid} />
         </CardContent>
       </Card>

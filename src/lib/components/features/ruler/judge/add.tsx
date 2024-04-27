@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/lib/components/ui/select";
-import { judgeFormSchema } from "~/lib/schema/judge.schema";
+import { judgeAddFormSchema } from "~/lib/schema/judge.schema";
 import { useToast } from "~/lib/components/ui/use-toast";
 import { ToastAction } from "~/lib/components/ui/toast";
 
@@ -46,11 +46,11 @@ export default function JugeAdd() {
   const [booths, setBooths] = useState<IBooth[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof judgeFormSchema>>({
-    resolver: zodResolver(judgeFormSchema),
+  const form = useForm<z.infer<typeof judgeAddFormSchema>>({
+    resolver: zodResolver(judgeAddFormSchema),
   });
 
-  async function onSubmit(values: z.infer<typeof judgeFormSchema>) {
+  async function onSubmit(values: z.infer<typeof judgeAddFormSchema>) {
     if (!isLoading) {
       setLoading(true);
       const account = await createUserWithEmailAndPassword(
