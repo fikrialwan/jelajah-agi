@@ -18,7 +18,7 @@ export default function Judge() {
 
   useEffect(() => {
     const accountRef = ref(db, "account");
-    const unsubscribe = onValue(accountRef, async (snapshot) => {
+    const unsubscribe = onValue(accountRef, (snapshot) => {
       const accountTemp: IAccount[] = [];
       const snapshotData = Object.entries(snapshot.val()).map(
         ([id, account]) => ({ id, ...(account as any) })
