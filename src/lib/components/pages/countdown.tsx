@@ -4,6 +4,16 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { child, get, ref, set } from "firebase/database";
 import { db } from "~/lib/api/firebase";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 interface IProps {
   isRuler?: boolean;
@@ -11,7 +21,6 @@ interface IProps {
 
 export default function Countdown({ isRuler }: IProps) {
   const [countdown, setCountdown] = useState<string>("00:00:00");
-  const [trigger, setTrigger] = useState<number>(0);
 
   useEffect(() => {
     setInterval(() => {
@@ -49,13 +58,12 @@ export default function Countdown({ isRuler }: IProps) {
         }
       });
     }, 100);
-  }, [trigger]);
+  }, []);
 
   const handleStart = () => {
     const now = new Date();
     now.setHours(now.getHours() + 2);
     set(ref(db, "endCountdown"), now.toString());
-    setTrigger((prev) => prev++);
   };
 
   const handleClear = () => {
@@ -75,13 +83,31 @@ export default function Countdown({ isRuler }: IProps) {
             Start
           </Button>
           {Boolean(countdown !== "00:00:00") && (
-            <Button
-              variant="outline"
-              className="w-full max-w-16"
-              onClick={handleClear}
-            >
-              Clear
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="w-full max-w-16">
+                  Reset
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Apakah anda yakin akan mereset countdown yang sedang
+                    berjalan ?
+                  </AlertDialogTitle>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <Button asChild variant="outline">
+                    <AlertDialogCancel>Tidak</AlertDialogCancel>
+                  </Button>
+                  <Button asChild variant="destructive" className="mb-2 md:m-0">
+                    <AlertDialogAction onClick={handleClear}>
+                      Ya
+                    </AlertDialogAction>
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
       )}
