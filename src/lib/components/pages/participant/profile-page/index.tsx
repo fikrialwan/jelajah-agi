@@ -88,7 +88,7 @@ const Profile = () => {
                   className="p-3 bg-neutral-200 rounded-xl mt-2 flex justify-between font-bold shadow-sm"
                 >
                   <p className="uppercase">{activity.booth}</p>
-                  <p>{activity.score}</p>
+                  {/* <p>{activity.score}</p> */}
                 </li>
               );
             })}
