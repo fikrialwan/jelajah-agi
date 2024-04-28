@@ -95,6 +95,7 @@ export const ScanQr = () => {
               ...participantStatus,
               currentBooth: currentIndex,
               currentActivity: newActivityKey,
+              editableActivity: "",
               isScanned: participantStatus.isScanned
                 ? [...participantStatus.isScanned, currentIndex]
                 : [currentIndex],

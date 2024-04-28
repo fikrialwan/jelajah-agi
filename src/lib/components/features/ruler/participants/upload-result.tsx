@@ -103,6 +103,7 @@ export default function UploadResult({
     const userUpdateData = {
       ...participantStatus,
       currentBooth: currentBooth < 5 ? currentBooth + 1 : 0,
+      editableActivity: participantStatus.currentActivity,
       currentActivity: "",
       isDone: participantStatus.isDone
         ? [...participantStatus.isDone, currentBooth]
