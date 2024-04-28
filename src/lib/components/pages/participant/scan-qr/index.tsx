@@ -7,15 +7,17 @@ import { Button } from "~/lib/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useToast } from "~/lib/components/ui/use-toast";
 import { db } from "~/lib/api/firebase";
-import { child, ref, get, onValue, update, push, set } from "firebase/database";
+import { child, ref, get, onValue, update, push } from "firebase/database";
 import { useCookies } from "next-client-cookies";
 import { ListBooth, ParticipantStatus } from "~/lib/stores/app.atom";
 import { useAtom } from "jotai";
+import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
 
 export const ScanQr = () => {
   const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
   const [listBooth, setListBooth] = useAtom(ListBooth);
   const [participantStatus, setParticipantStatus] = useAtom(ParticipantStatus);
+  const [endCountdown, setEndCountDown] = useState<any>();
   const router = useRouter();
   const { toast } = useToast();
   const cookies = useCookies();
@@ -48,6 +50,10 @@ export const ScanQr = () => {
       }
     });
 
+    get(child(ref(db), "endCountdown")).then((countdownSnapshot) => {
+      setEndCountDown(countdownSnapshot.val());
+    });
+
     return () => {
       unSubscribe();
     };
@@ -67,43 +73,51 @@ export const ScanQr = () => {
       html5QrCode.stop().then(() => {
         // Show success message
         setShowQRScanner(false);
-        // Check if decodedText === currentBooth
-        if (decodedText === currentBooth.slug) {
-          // set Firebase for current booth already scanned
+        if (checkCountdownValid(endCountdown)) {
+          if (decodedText === currentBooth.slug) {
+            // set Firebase for current booth already scanned
 
-          const dataActivty = {
-            startDate: new Date(),
-            booth: currentBooth.slug,
-            endDate: "-",
-            score: 0,
-            status: "needValidation",
-            totalMember: 0,
-            teamName: participantStatus.name,
-            uid,
-          };
-          const newActivityRef = push(ref(db, `activity`));
-          const newActivityKey = newActivityRef.key;
-          update(newActivityRef, dataActivty);
+            const dataActivty = {
+              startDate: new Date(),
+              booth: currentBooth.slug,
+              endDate: "-",
+              score: 0,
+              status: "needValidation",
+              totalMember: 0,
+              teamName: participantStatus.name,
+              uid,
+            };
+            const newActivityRef = push(ref(db, `activity`));
+            const newActivityKey = newActivityRef.key;
+            update(newActivityRef, dataActivty);
 
-          const userUpdateData = {
-            ...participantStatus,
-            currentBooth: currentIndex,
-            currentActivity: newActivityKey,
-            isScanned: participantStatus.isScanned
-              ? [...participantStatus.isScanned, currentIndex]
-              : [currentIndex],
-          };
-          const updates: any = {};
-          updates["/account/" + uid] = userUpdateData;
-          update(ref(db), updates);
-          toast({
-            variant: "success",
-            title: "Success Scan Booth",
-          });
+            const userUpdateData = {
+              ...participantStatus,
+              currentBooth: currentIndex,
+              currentActivity: newActivityKey,
+              editableActivity: "",
+              isScanned: participantStatus.isScanned
+                ? [...participantStatus.isScanned, currentIndex]
+                : [currentIndex],
+            };
+            const updates: any = {};
+            updates["/account/" + uid] = userUpdateData;
+            update(ref(db), updates);
+            toast({
+              variant: "success",
+              title: "Success Scan Booth",
+            });
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Can't scan this booth, please go to the current Booth",
+            });
+          }
         } else {
           toast({
             variant: "destructive",
-            title: "Can't scan this booth, please go to the current Booth",
+            title: "Uh oh! Failed.",
+            description: "Waktu telah habis.",
           });
         }
         router.replace("/participants");

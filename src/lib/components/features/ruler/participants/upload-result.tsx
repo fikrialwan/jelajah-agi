@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "~/lib/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/lib/components/ui/dialog";
 import { Input } from "~/lib/components/ui/input";
 import { storage, db } from "~/lib/api/firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
-import { ref as refDb, update } from "firebase/database";
+import { ref as refDb, update, get, child } from "firebase/database";
 import { IParticipantStatus } from "~/lib/stores/app.atom";
 import { toast } from "~/lib/components/ui/use-toast";
+import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
 
 interface IProps {
   typeResult: "file" | "link";
@@ -35,44 +35,60 @@ export default function UploadResult({
   const [result, setResult] = useState<string>("");
   const [file, setFile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [endCountdown, setEndCountDown] = useState<any>();
+
   const handleSubmit = () => {
-    setIsLoading(true);
-    if (typeResult === "file") {
-      if (!file) {
-        toast({
-          title: "Pilih File",
-        });
-        return;
-      }
-      const storageRef = ref(storage, `result/${uid}/${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-          switch (snapshot.state) {
-            case "running":
-              setIsLoading(true);
-              console.log("Upload is running");
-              break;
-          }
-        },
-        (error) => {
-          return error;
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            updateData(downloadURL);
+    if (checkCountdownValid(endCountdown)) {
+      setIsLoading(true);
+      if (typeResult === "file") {
+        if (!file) {
+          toast({
+            title: "Pilih File",
           });
+          return;
         }
-      );
+        const storageRef = ref(storage, `result/${uid}/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            switch (snapshot.state) {
+              case "running":
+                setIsLoading(true);
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            return error;
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              updateData(downloadURL);
+            });
+          }
+        );
+      } else {
+        updateData(result);
+      }
     } else {
-      updateData(result);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Failed.",
+        description: "Waktu telah habis.",
+      });
     }
   };
+
+  useEffect(() => {
+    get(child(refDb(db), "endCountdown")).then((countdownSnapshot) => {
+      setEndCountDown(countdownSnapshot.val());
+    });
+  }, []);
 
   const currentBooth = participantStatus.currentBooth;
 
@@ -87,6 +103,7 @@ export default function UploadResult({
     const userUpdateData = {
       ...participantStatus,
       currentBooth: currentBooth < 5 ? currentBooth + 1 : 0,
+      editableActivity: participantStatus.currentActivity,
       currentActivity: "",
       isDone: participantStatus.isDone
         ? [...participantStatus.isDone, currentBooth]

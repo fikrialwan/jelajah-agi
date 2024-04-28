@@ -11,6 +11,7 @@ export interface IParticipantStatus {
   isDone: number[];
   currentBooth: number;
   currentActivity: string;
+  editableActivity: string;
   isScanned: number[];
   index: number;
   name: string;
@@ -27,6 +28,8 @@ export interface IActivity {
   status: string;
   totalMember: number;
   uid: string;
+  typeResult: "file" | "link";
+  slug?: string;
 }
 
 export const ListBooth = atom<IBooth[] | []>([]);
@@ -38,7 +41,10 @@ export const ParticipantStatus = atom<IParticipantStatus>({
   isDone: [],
   isScanned: [],
   currentActivity: "",
+  editableActivity: "",
   isFinish: false,
 });
 
 export const AllActivity = atom<IActivity[]>([]);
+
+export const DialogEditActivity = atom<IActivity | null>(null);
