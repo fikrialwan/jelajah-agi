@@ -33,7 +33,7 @@ export default function EditViewResult() {
   }, []);
 
   const handleSubmit = () => {
-    if (!checkCountdownValid(endCountdown)) {
+    if (checkCountdownValid(endCountdown)) {
       if (open?.typeResult === "file") {
         if (!file) {
           toast({

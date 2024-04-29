@@ -130,14 +130,16 @@ const ParticipantProcess = () => {
                 )}
               </>
             ) : (
-              <ListProcess
-                listProcess={listBooth.map((item, index: number) => {
-                  return {
-                    ...item,
-                    indexBooth: index,
-                  };
-                })}
-              />
+              <div className="h-full overflow-scroll w-full pt-5">
+                <ListProcess
+                  listProcess={listBooth.map((item, index: number) => {
+                    return {
+                      ...item,
+                      indexBooth: index,
+                    };
+                  })}
+                />
+              </div>
             )}
           </div>
         </>
