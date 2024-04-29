@@ -1,9 +1,10 @@
 import React from "react";
+import LeaderboardList from "../features/leaderboard";
 
 export default function Home() {
   return (
-    <main className="w-full h-screen flex justify-center items-center">
-      <h1 className="text-primary font-semibold text-2xl">Jelajah AGI</h1>
+    <main className="container w-full h-screen py-8 border-x">
+      <LeaderboardList />
     </main>
   );
 }
