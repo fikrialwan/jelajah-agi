@@ -63,7 +63,7 @@ export default function Score({ team, result, id }: IProps) {
           {cookies.get("boothType") === "file" ? (
             <div>
               <p>Hasil :</p>
-              <div className="relative w-full aspect-square">
+              <div className="relative w-full max-h-[50vh] aspect-square">
                 <Image
                   src={result}
                   fill
