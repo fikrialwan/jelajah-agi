@@ -136,7 +136,8 @@ export default function EditViewResult() {
               </fieldset>
             )}
 
-            {participant.editableActivity === open?.slug ? (
+            {participant.editableActivity === open?.slug &&
+            open.status !== "done" ? (
               viewType === "view" ? (
                 <Button
                   type="button"
