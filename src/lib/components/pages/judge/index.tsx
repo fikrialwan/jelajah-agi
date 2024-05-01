@@ -94,7 +94,7 @@ const ListTeamBooth = () => {
           }
         }
       }
-      setActivities(activitiesTemp);
+      setActivities(activitiesTemp.reverse());
     });
 
     return () => {
