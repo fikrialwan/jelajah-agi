@@ -56,8 +56,8 @@ const CardTeam = (props: {
         <Score team={name} id={id} result={result || ""} />
       )}
       {status === "done" && (
-        <p className="text-2xl font-semibold text-end">
-          <span className="text-green-600 ">Score: {score}</span> <br />
+        <p className="font-semibold text-end">
+          <span className="text-green-600 text-2xl">Score: {score}</span> <br />
           Time: {formatterTime(getTime(endDate) - getTime(startDate)).formatted}
         </p>
       )}
