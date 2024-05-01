@@ -32,6 +32,7 @@ import { db } from "~/lib/api/firebase";
 import { useCookies } from "next-client-cookies";
 import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
 import { useToast } from "../../ui/use-toast";
+import { formatterTime } from "~/lib/helper/formatter.helper";
 
 const CardTeam = (props: {
   name: string;
@@ -39,8 +40,11 @@ const CardTeam = (props: {
   score?: number;
   result?: string;
   id: string;
+  endDate: string;
+  startDate: string;
 }) => {
-  const { name, status, score, id, result } = props;
+  const { name, status, score, id, result, endDate, startDate } = props;
+  const getTime = (date: string) => new Date(date).getTime();
   return (
     <div className="py-5 px-6 rounded-lg shadow-md border flex justify-between items-center">
       <p>{name}</p>
@@ -52,7 +56,10 @@ const CardTeam = (props: {
         <Score team={name} id={id} result={result || ""} />
       )}
       {status === "done" && (
-        <p className="text-green-600 text-2xl font-semibold">{score}</p>
+        <p className="text-2xl font-semibold text-end">
+          <span className="text-green-600 ">Score: {score}</span> <br />
+          Time: {formatterTime(getTime(endDate) - getTime(startDate)).formatted}
+        </p>
       )}
     </div>
   );
@@ -134,6 +141,8 @@ const ListTeamBooth = () => {
                 score={activity.score}
                 id={activity.id}
                 result={activity.result}
+                startDate={activity.startDate}
+                endDate={activity.endDate}
               />
             </button>
           );
