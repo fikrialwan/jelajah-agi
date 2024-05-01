@@ -94,7 +94,7 @@ const ListTeamBooth = () => {
           }
         }
       }
-      setActivities(activitiesTemp);
+      setActivities(activitiesTemp.reverse());
     });
 
     return () => {
@@ -122,7 +122,7 @@ const ListTeamBooth = () => {
   };
   return (
     <>
-      <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col p-2">
         {activities.map((activity, index) => {
           return (
             <button
