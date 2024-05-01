@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
+import { formatterTime } from "~/lib/helper/formatter.helper";
 
 interface IProps {
   isRuler?: boolean;
@@ -33,25 +34,9 @@ export default function Countdown({ isRuler }: IProps) {
           if (now.getTime() < endCountdown.getTime()) {
             const difference = endCountdown.getTime() - now.getTime();
 
-            const hours: number = Math.floor(difference / (1000 * 60 * 60));
-            const minutes: number = Math.floor(
-              (difference % (1000 * 60 * 60)) / (1000 * 60)
-            );
-            const seconds: number = Math.floor(
-              (difference % (1000 * 60)) / 1000
-            );
+            const { formatted } = formatterTime(difference);
 
-            // Format hours, minutes, and seconds
-            const formattedHours: string =
-              hours < 10 ? "0" + hours : hours.toString();
-            const formattedMinutes: string =
-              minutes < 10 ? "0" + minutes : minutes.toString();
-            const formattedSeconds: string =
-              seconds < 10 ? "0" + seconds : seconds.toString();
-
-            setCountdown(
-              `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
-            );
+            setCountdown(formatted);
           } else {
             setCountdown("00:00:00");
           }
