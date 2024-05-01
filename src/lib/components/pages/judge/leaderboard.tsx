@@ -55,7 +55,7 @@ export default function LeaderboardPost() {
   }, [cookies]);
 
   return (
-    <ul className="flex w-full flex-col">
+    <ul className="flex w-full flex-col p-2 gap-3">
       {activities.map((activity, index) => {
         return (
           <li key={activity.id}>
