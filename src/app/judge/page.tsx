@@ -1,7 +1,7 @@
-import { ListTeamBooth } from "~/lib/components/pages/judge";
+import HomeJudge from "~/lib/components/pages/judge";
 
 const ListTeamJudgePage = () => {
-  return <ListTeamBooth />;
+  return <HomeJudge />;
 };
 
 export default ListTeamJudgePage;
