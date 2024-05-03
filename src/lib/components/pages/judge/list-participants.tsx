@@ -17,7 +17,7 @@ export default function ParticipantOnBooth() {
       const boothIndex = booths.findIndex(
         (booth) => booth.slug === cookies.get("booth")
       );
-      console.log(boothIndex);
+
       if (boothIndex !== -1) {
         const unsubscribe = onValue(accountRef, async (snapshot) => {
           const participantsTemp: IParticipant[] = [];

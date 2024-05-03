@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CookiesProvider } from "next-client-cookies/server";
+import FCMComp from "~/lib/components/features/fcm";
 import { Toaster } from "~/lib/components/ui/toaster";
 import AtomProvider from "~/lib/providers/atom-provider";
 import ReactQueryProvider from "~/lib/providers/react-query-provider";
@@ -23,6 +24,7 @@ export default function RootLayout({
           <ReactQueryProvider>
             <AtomProvider>{children}</AtomProvider>
             <Toaster />
+            <FCMComp />
           </ReactQueryProvider>
         </CookiesProvider>
       </body>
