@@ -6,7 +6,7 @@ import {
   DialogEditActivity,
   AllActivity,
 } from "~/lib/stores/app.atom";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import Image from "next/image";
 import { db } from "~/lib/api/firebase";
 import { ref, onValue } from "firebase/database";
@@ -17,8 +17,7 @@ export const ListProcess = ({ listProcess }: { listProcess: IBooth[] }) => {
   // const { listProcess } = props;
   const [participantStatus] = useAtom(ParticipantStatus);
   const [allActivity, setAllActivity] = useAtom(AllActivity);
-  const [dialogEditActivity, setDialogEditActivity] =
-    useAtom(DialogEditActivity);
+  const setDialogEditActivity = useSetAtom(DialogEditActivity);
   const cookies = useCookies();
   const uid = cookies.get("uid");
 
