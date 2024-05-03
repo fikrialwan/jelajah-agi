@@ -33,6 +33,7 @@ import { useCookies } from "next-client-cookies";
 import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
 import { useToast } from "../../ui/use-toast";
 import { formatterTime } from "~/lib/helper/formatter.helper";
+import { Timer, Users } from "lucide-react";
 
 const CardTeam = (props: {
   name: string;
@@ -42,8 +43,10 @@ const CardTeam = (props: {
   id: string;
   endDate: string;
   startDate: string;
+  totalMember: string;
 }) => {
-  const { name, status, score, id, result, endDate, startDate } = props;
+  const { name, status, score, id, result, endDate, startDate, totalMember } =
+    props;
   const getTime = (date: string) => new Date(date).getTime();
   return (
     <div className="py-5 px-6 rounded-lg shadow-md border flex justify-between items-center">
@@ -58,7 +61,13 @@ const CardTeam = (props: {
       {status === "done" && (
         <p className="font-semibold text-end">
           <span className="text-green-600 text-2xl">Score: {score}</span> <br />
-          Time: {formatterTime(getTime(endDate) - getTime(startDate)).formatted}
+          <span className="flex flex-row items-center justify-end my-1">
+            <Timer />:{" "}
+            {formatterTime(getTime(endDate) - getTime(startDate)).formatted}
+          </span>
+          <span className="flex flex-row items-center justify-end">
+            <Users />: {totalMember} orang
+          </span>
         </p>
       )}
     </div>
@@ -143,6 +152,7 @@ const ListTeamBooth = () => {
                 result={activity.result}
                 startDate={activity.startDate}
                 endDate={activity.endDate}
+                totalMember={activity.totalMember}
               />
             </button>
           );

@@ -8,6 +8,7 @@ import { Button } from "../../ui/button";
 import { useEffect } from "react";
 import { db } from "~/lib/api/firebase";
 import { ref, onValue, get, child } from "firebase/database";
+import { MAX_MEMBER } from "~/lib/utils/config";
 
 interface ILeaderBoard {
   uid: string;
@@ -75,7 +76,7 @@ const LeaderboardList = () => {
               const findIndex = accumulator.findIndex(
                 (item) => item.uid === currValue.uid
               );
-
+              console.log({ currValue });
               // Check if participants already in the list
               // if not then score is placed not accumulated
               if (findIndex === -1) {
@@ -84,7 +85,8 @@ const LeaderboardList = () => {
                   {
                     uid: currValue.uid,
                     name: currValue.teamName,
-                    score: currValue.score,
+                    score:
+                      currValue.score * (currValue.totalMember / MAX_MEMBER),
                     doneBooth: [currValue.booth],
                     endDate: currValue.endDate,
                   },
@@ -101,8 +103,11 @@ const LeaderboardList = () => {
                   ...accumulator[findIndex],
                   score:
                     currentBooth.doneBooth.length === 5
-                      ? currentBooth.score + currValue.score + 10 * minuteLeft
-                      : currentBooth.score + currValue.score,
+                      ? currentBooth.score +
+                        currValue.score * (currValue.totalMember / MAX_MEMBER) +
+                        10 * minuteLeft
+                      : currentBooth.score +
+                        currValue.score * (currValue.totalMember / MAX_MEMBER),
                   doneBooth:
                     currValue.status === "done" &&
                     !currentBooth.doneBooth.includes(currValue.booth)
