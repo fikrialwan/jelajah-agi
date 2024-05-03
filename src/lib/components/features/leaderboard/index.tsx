@@ -76,7 +76,6 @@ const LeaderboardList = () => {
               const findIndex = accumulator.findIndex(
                 (item) => item.uid === currValue.uid
               );
-              console.log({ currValue });
               // Check if participants already in the list
               // if not then score is placed not accumulated
               if (findIndex === -1) {
