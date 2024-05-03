@@ -6,6 +6,7 @@ import { db } from "~/lib/api/firebase";
 import { getTime } from "~/lib/helper/time.helper";
 import { IActivity } from "~/lib/interfaces/activity.interface";
 import { CardTeam } from "./card";
+import { MAX_MEMBER } from "~/lib/utils/config";
 
 interface IProps {
   booth: string;
@@ -26,7 +27,8 @@ export default function RulerLeaderboardComp({ booth }: IProps) {
           if (item.booth === booth && item.status === "done") {
             const name = await get(child(ref(db), `account/${item.uid}/name`));
             activitiesTemp.push({
-              ...(item as Omit<IActivity, "name">),
+              ...(item as Omit<IActivity, "name" | "score">),
+              score: item.score * (item.totalMember / MAX_MEMBER),
               name: name.val(),
             });
           }
@@ -37,7 +39,7 @@ export default function RulerLeaderboardComp({ booth }: IProps) {
         const bDifference = getTime(b.endDate) - getTime(b.startDate);
         if (a.score < b.score) {
           return 1;
-        } else if (b.score > a.score) {
+        } else if (a.score > b.score) {
           return -1;
         } else if (a.score === b.score && aDifference < bDifference) {
           return -1;
