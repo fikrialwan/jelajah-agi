@@ -50,7 +50,7 @@ const NavbarParticipant = () => {
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <nav className="absoulute bottom-0 left-0 h-[50px] border-t border-t-primary shadow-sm w-full">
+    <nav className="fixed bottom-0 left-0 h-[50px] border-t border-t-primary shadow-sm w-screen z-10">
       <ul className="flex justify-between size-full">
         {dataMenu.map((menu) => {
           return (
