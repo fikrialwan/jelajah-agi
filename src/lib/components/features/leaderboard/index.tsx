@@ -35,13 +35,7 @@ const CardBoard = ({
         <span>
           <span
             className={`mr-5 border p-3 rounded-full ${
-              index === 0
-                ? "bg-[#d4af37]"
-                : index === 1
-                ? "bg-[#c0c0c0]"
-                : index === 2
-                ? "bg-[#CD7F32]"
-                : ""
+              index === 0 ? "bg-[#d4af37]" : ""
             }`}
           >
             {index + 1}
