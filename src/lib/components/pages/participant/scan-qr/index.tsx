@@ -60,9 +60,10 @@ export const ScanQr = () => {
     };
   }, []);
 
-  const currentIndex = participantStatus.currentBooth
-    ? participantStatus.currentBooth
-    : participantStatus.index % 6;
+  const currentIndex =
+    participantStatus.currentBooth !== undefined
+      ? participantStatus.currentBooth
+      : participantStatus.index % 6;
   const currentBooth = listBooth[currentIndex];
 
   useEffect(() => {
