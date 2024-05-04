@@ -27,7 +27,11 @@ export default function LeaderboardPost() {
             const name = await get(child(ref(db), `account/${item.uid}/name`));
             activitiesTemp.push({
               ...(item as Omit<IActivity, "name" | "score">),
-              score: item.score * (item.totalMember / MAX_MEMBER),
+              score:
+                item.score *
+                (item.totalMember > MAX_MEMBER
+                  ? 1
+                  : item.totalMember / MAX_MEMBER),
               name: name.val(),
             });
           }

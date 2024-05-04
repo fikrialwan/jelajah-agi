@@ -85,7 +85,10 @@ const LeaderboardList = () => {
                     uid: currValue.uid,
                     name: currValue.teamName,
                     score:
-                      currValue.score * (currValue.totalMember / MAX_MEMBER),
+                      currValue.score *
+                      (currValue.totalMember > MAX_MEMBER
+                        ? 1
+                        : currValue.totalMember / MAX_MEMBER),
                     doneBooth: [currValue.booth],
                     endDate: currValue.endDate,
                   },
@@ -103,10 +106,16 @@ const LeaderboardList = () => {
                   score:
                     currentBooth.doneBooth.length === 5
                       ? currentBooth.score +
-                        currValue.score * (currValue.totalMember / MAX_MEMBER) +
+                        currValue.score *
+                          (currValue.totalMember > MAX_MEMBER
+                            ? 1
+                            : currValue.totalMember / MAX_MEMBER) +
                         10 * minuteLeft
                       : currentBooth.score +
-                        currValue.score * (currValue.totalMember / MAX_MEMBER),
+                        currValue.score *
+                          (currValue.totalMember > MAX_MEMBER
+                            ? 1
+                            : currValue.totalMember / MAX_MEMBER),
                   doneBooth:
                     currValue.status === "done" &&
                     !currentBooth.doneBooth.includes(currValue.booth)
