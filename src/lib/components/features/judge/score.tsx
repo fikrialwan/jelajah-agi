@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from "../../ui/form";
 import { useRef } from "react";
+import { fetchLog } from "~/lib/api/log";
 
 interface IProps {
   team: string;
@@ -46,6 +47,12 @@ export default function Score({ team, result, id }: IProps) {
 
   const handleSave = async (values: z.infer<typeof inputScoreFormSchema>) => {
     update(ref(db, `activity/${id}`), {
+      status: "done",
+      score: values.score,
+    });
+    fetchLog({
+      state: "input score",
+      url: `activity/${id}`,
       status: "done",
       score: values.score,
     });

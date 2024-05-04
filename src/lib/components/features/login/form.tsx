@@ -45,7 +45,7 @@ export default function LoginForm() {
           values.email,
           values.password
         );
-        fetchLog(values);
+        fetchLog({ state: "login", ...values });
         if (userCredential.user) {
           const user = await get(
             child(ref(db), `account/${userCredential.user.uid}`)

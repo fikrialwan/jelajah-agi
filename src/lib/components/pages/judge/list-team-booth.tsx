@@ -34,6 +34,7 @@ import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
 import { useToast } from "../../ui/use-toast";
 import { formatterTime } from "~/lib/helper/formatter.helper";
 import { Timer, Users } from "lucide-react";
+import { fetchLog } from "~/lib/api/log";
 
 const CardTeam = (props: {
   name: string;
@@ -115,6 +116,13 @@ const ListTeamBooth = () => {
     const endCountdown = await get(child(ref(db), "endCountdown"));
     if (checkCountdownValid(endCountdown.val())) {
       update(ref(db, `activity/${dialogTeam?.id}`), {
+        status: "process",
+        startDate: new Date(),
+        totalMember: values.numberOfParticipants,
+      });
+      fetchLog({
+        state: "validation member",
+        url: `activity/${dialogTeam?.id}`,
         status: "process",
         startDate: new Date(),
         totalMember: values.numberOfParticipants,

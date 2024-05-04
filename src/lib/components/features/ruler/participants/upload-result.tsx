@@ -15,6 +15,7 @@ import { ref as refDb, update, get, child } from "firebase/database";
 import { IParticipantStatus } from "~/lib/stores/app.atom";
 import { toast } from "~/lib/components/ui/use-toast";
 import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
+import { fetchLog } from "~/lib/api/log";
 
 interface IProps {
   typeResult: "file" | "link";
@@ -120,6 +121,7 @@ export default function UploadResult({
       setIsLoading(false);
       setOpen(false);
     });
+    fetchLog({ state: "upload", ...updates });
   };
 
   return (
