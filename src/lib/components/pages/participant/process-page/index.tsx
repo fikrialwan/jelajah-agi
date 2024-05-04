@@ -34,6 +34,7 @@ const ParticipantProcess = () => {
     const statusUserRef = ref(db, `account/${uid}`);
     const unSubscribe = onValue(statusUserRef, async (snapshot) => {
       if (snapshot.exists()) {
+        console.log(snapshot.val());
         setParticipantStatus(snapshot.val());
         const { currentActivity } = snapshot.val();
         if (currentActivity) {
@@ -58,9 +59,10 @@ const ParticipantProcess = () => {
     };
   }, []);
 
-  const currentIndex = participantStatus.currentBooth
-    ? participantStatus.currentBooth
-    : participantStatus.index % 6;
+  const currentIndex =
+    participantStatus.currentBooth !== undefined
+      ? participantStatus.currentBooth
+      : participantStatus.index % 6;
   const currentBooth = listBooth[currentIndex];
 
   return (
