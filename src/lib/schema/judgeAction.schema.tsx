@@ -9,5 +9,5 @@ export const validateParticipantFormSchema = z.object({
 export const inputScoreFormSchema = z.object({
   score: z
     .number({ required_error: "This field is required" })
-    .min(1, { message: "The value min is 1" }),
+    .min(0, { message: "The value min is 0" }),
 });
