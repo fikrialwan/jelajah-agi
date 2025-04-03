@@ -12,10 +12,11 @@ import { Input } from "~/lib/components/ui/input";
 import { storage, db } from "~/lib/api/firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 import { ref as refDb, update, get, child } from "firebase/database";
-import { IParticipantStatus } from "~/lib/stores/app.atom";
+import { IParticipantStatus, ListBooth } from "~/lib/stores/app.atom";
 import { toast } from "~/lib/components/ui/use-toast";
 import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
 import { fetchLog } from "~/lib/api/log";
+import { useAtom } from "jotai";
 
 interface IProps {
   typeResult: "file" | "link";
@@ -34,6 +35,7 @@ export default function UploadResult({
 }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [result, setResult] = useState<string>("");
+  const [listBooth, setListBooth] = useAtom(ListBooth);
   const [file, setFile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [endCountdown, setEndCountDown] = useState<any>();
@@ -71,7 +73,7 @@ export default function UploadResult({
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
               updateData(downloadURL);
             });
-          }
+          },
         );
       } else {
         updateData(result);
@@ -86,12 +88,23 @@ export default function UploadResult({
   };
 
   useEffect(() => {
-    get(child(refDb(db), "endCountdown")).then((countdownSnapshot) => {
+    const dbRef = refDb(db);
+    get(child(dbRef, "endCountdown")).then((countdownSnapshot) => {
       setEndCountDown(countdownSnapshot.val());
+    });
+    get(child(dbRef, "booth")).then((snapshot) => {
+      if (snapshot.exists()) {
+        setListBooth(snapshot.val());
+      }
     });
   }, []);
 
   const currentBooth = participantStatus.currentBooth;
+  const currentIndex =
+    participantStatus.currentBooth !== undefined
+      ? participantStatus.currentBooth
+      : participantStatus.index % 6;
+  const currentBoothDetail = listBooth[currentIndex];
 
   const updateData = (result: string) => {
     setIsLoading(true);
