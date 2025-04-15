@@ -140,57 +140,59 @@ export default function UploadResult({
   };
 
   useEffect(() => {
-    const html5QrCode = new Html5Qrcode("scan-qr-reader");
-    const qrCodeSuccessCallback = (decodedText: any) => {
-      // decodedText = text hasil scan
-      // decodedResult = {result text, decoderName, format dll}
+    if (open) {
+      const html5QrCode = new Html5Qrcode("scan-qr-reader");
+      const qrCodeSuccessCallback = (decodedText: any) => {
+        // decodedText = text hasil scan
+        // decodedResult = {result text, decoderName, format dll}
 
-      html5QrCode.stop().then(() => {
-        // Show success message
-        setShowQRScanner(false);
-        if (checkCountdownValid(endCountdown)) {
-          if (decodedText === currentBoothDetail.slugEnd) {
-            handleSubmit();
+        html5QrCode.stop().then(() => {
+          // Show success message
+          setShowQRScanner(false);
+          if (checkCountdownValid(endCountdown)) {
+            if (decodedText === currentBoothDetail.slugEnd) {
+              handleSubmit();
+            } else {
+              toast({
+                variant: "destructive",
+                title: "Can't scan QR Code. Please scan the correct QR Code.",
+              });
+              setOpen(false);
+            }
           } else {
             toast({
               variant: "destructive",
-              title: "Can't scan QR Code. Please scan the correct QR Code.",
+              title: "Uh oh! Failed.",
+              description: "Waktu telah habis.",
             });
             setOpen(false);
           }
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Failed.",
-            description: "Waktu telah habis.",
-          });
-          setOpen(false);
-        }
-      });
-      /* handle success */
-    };
-    const qrCodeErrorCallback = (error: any) => {
-      console.log(error);
-      /* handle success */
-    };
+        });
+        /* handle success */
+      };
+      const qrCodeErrorCallback = (error: any) => {
+        console.log(error);
+        /* handle success */
+      };
 
-    // Check if when scan is the time is still available !!
+      // Check if when scan is the time is still available !!
 
-    if (showQRScanner) {
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { height: 250, width: 250 } },
-        qrCodeSuccessCallback,
-        qrCodeErrorCallback,
-      );
-    } else {
-      html5QrCode.clear();
+      if (showQRScanner) {
+        html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { height: 250, width: 250 } },
+          qrCodeSuccessCallback,
+          qrCodeErrorCallback,
+        );
+      } else {
+        html5QrCode.clear();
+      }
     }
     // cleanup function when component will unmount
     return () => {
       //   html5QrCode.clear();
     };
-  }, [showQRScanner]);
+  }, [showQRScanner, open]);
 
   return (
     <>
