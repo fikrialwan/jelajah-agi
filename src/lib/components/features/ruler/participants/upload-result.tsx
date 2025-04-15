@@ -17,6 +17,7 @@ import { toast } from "~/lib/components/ui/use-toast";
 import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
 import { fetchLog } from "~/lib/api/log";
 import { useAtom } from "jotai";
+import { Html5Qrcode } from "html5-qrcode";
 
 interface IProps {
   typeResult: "file" | "link";
@@ -33,6 +34,7 @@ export default function UploadResult({
   participantStatus,
   uid,
 }: IProps) {
+  const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [result, setResult] = useState<string>("");
   const [listBooth, setListBooth] = useAtom(ListBooth);
@@ -137,6 +139,59 @@ export default function UploadResult({
     fetchLog({ state: "upload", ...updates });
   };
 
+  useEffect(() => {
+    const html5QrCode = new Html5Qrcode("scan-qr-reader");
+    const qrCodeSuccessCallback = (decodedText: any) => {
+      // decodedText = text hasil scan
+      // decodedResult = {result text, decoderName, format dll}
+
+      html5QrCode.stop().then(() => {
+        // Show success message
+        setShowQRScanner(false);
+        if (checkCountdownValid(endCountdown)) {
+          if (decodedText === currentBoothDetail.slugEnd) {
+            handleSubmit();
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Can't scan QR Code. Please scan the correct QR Code.",
+            });
+            setOpen(false);
+          }
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Failed.",
+            description: "Waktu telah habis.",
+          });
+          setOpen(false);
+        }
+      });
+      /* handle success */
+    };
+    const qrCodeErrorCallback = (error: any) => {
+      console.log(error);
+      /* handle success */
+    };
+
+    // Check if when scan is the time is still available !!
+
+    if (showQRScanner) {
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { height: 250, width: 250 } },
+        qrCodeSuccessCallback,
+        qrCodeErrorCallback,
+      );
+    } else {
+      html5QrCode.clear();
+    }
+    // cleanup function when component will unmount
+    return () => {
+      //   html5QrCode.clear();
+    };
+  }, [showQRScanner]);
+
   return (
     <>
       <Button
@@ -149,55 +204,64 @@ export default function UploadResult({
       </Button>
       <Dialog open={open}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-center">Upload hasil</DialogTitle>
-            <form className="flex flex-col gap-2">
-              {typeResult === "link" && (
-                <fieldset className="flex flex-col items-start">
-                  <label>Link</label>
-                  <Input
-                    onChange={(e) => setResult(e.target.value)}
-                    placeholder="ex. https://www.instagram.com/astragemaislami/"
-                    name="link"
-                  />
-                </fieldset>
-              )}
+          {showQRScanner ? (
+            <div
+              id="scan-qr-reader"
+              className="w-full h-[300px] flex items-center justify-center"
+            />
+          ) : (
+            <DialogHeader>
+              <DialogTitle className="text-center">Upload hasil</DialogTitle>
+              <form className="flex flex-col gap-2">
+                {typeResult === "link" && (
+                  <fieldset className="flex flex-col items-start">
+                    <label>Link</label>
+                    <Input
+                      onChange={(e) => setResult(e.target.value)}
+                      placeholder="ex. https://www.instagram.com/astragemaislami/"
+                      name="link"
+                    />
+                  </fieldset>
+                )}
 
-              {typeResult === "file" && (
-                <fieldset className="flex flex-col items-start">
-                  <label>Image</label>
-                  <Input
-                    name="img"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        setFile(e.target.files[0]);
-                      } else {
-                        setFile(null);
-                      }
-                    }}
-                  />
-                </fieldset>
-              )}
-              <Button
-                type="button"
-                className="mt-2"
-                variant="default"
-                onClick={handleSubmit}
-              >
-                Save
-              </Button>
-              <Button
-                type="button"
-                className="mt-2"
-                variant="secondary"
-                onClick={() => setOpen(false)}
-              >
-                Close
-              </Button>
-            </form>
-          </DialogHeader>
+                {typeResult === "file" && (
+                  <fieldset className="flex flex-col items-start">
+                    <label>Image</label>
+                    <Input
+                      name="img"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          setFile(e.target.files[0]);
+                        } else {
+                          setFile(null);
+                        }
+                      }}
+                    />
+                  </fieldset>
+                )}
+                <Button
+                  type="button"
+                  className="mt-2"
+                  variant="default"
+                  onClick={() => {
+                    setShowQRScanner(true);
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  type="button"
+                  className="mt-2"
+                  variant="secondary"
+                  onClick={() => setOpen(false)}
+                >
+                  Close
+                </Button>
+              </form>
+            </DialogHeader>
+          )}
         </DialogContent>
       </Dialog>
     </>
