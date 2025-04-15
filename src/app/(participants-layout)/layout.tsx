@@ -6,7 +6,7 @@ export default function RulerLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen w-screen">
+    <div className="min-h-dvh w-screen">
       <main className="h-full pb-[50px]">{children}</main>
       <NavbarParticipant />
     </div>

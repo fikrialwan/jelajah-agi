@@ -2,6 +2,7 @@ import { atom } from "jotai";
 
 export interface IBooth {
   slug: number;
+  slugEnd: string;
   name: string;
   image: string;
   type: "file" | "link";
