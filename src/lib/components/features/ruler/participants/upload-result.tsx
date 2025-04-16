@@ -107,7 +107,7 @@ export default function UploadResult({
   const currentIndex =
     participantStatus.currentBooth !== undefined
       ? participantStatus.currentBooth
-      : participantStatus.index % 6;
+      : participantStatus.index % 7;
   const currentBoothDetail = listBooth[currentIndex];
 
   const updateData = (result: string) => {

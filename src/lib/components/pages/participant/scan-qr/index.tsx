@@ -63,7 +63,7 @@ export const ScanQr = () => {
   const currentIndex =
     participantStatus.currentBooth !== undefined
       ? participantStatus.currentBooth
-      : participantStatus.index % 6;
+      : participantStatus.index % 7;
   const currentBooth = listBooth[currentIndex];
 
   useEffect(() => {
@@ -144,7 +144,7 @@ export const ScanQr = () => {
         { facingMode: "environment" },
         { fps: 10, qrbox: { height: 250, width: 250 } },
         qrCodeSuccessCallback,
-        qrCodeErrorCallback
+        qrCodeErrorCallback,
       );
     } else {
       html5QrCode.clear();

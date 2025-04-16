@@ -21,13 +21,14 @@ export const ListProcess = ({ listProcess }: { listProcess: IBooth[] }) => {
   const cookies = useCookies();
   const uid = cookies.get("uid");
 
-  const currentIndex = participantStatus.currentBooth
-    ? participantStatus.currentBooth
-    : participantStatus.index;
+  const currentIndex =
+    participantStatus.currentBooth !== undefined
+      ? participantStatus.currentBooth
+      : participantStatus.index;
 
   const sortedBooth = [
-    ...listProcess.slice(participantStatus.index % 6),
-    ...listProcess.slice(0, participantStatus.index % 6),
+    ...listProcess.slice(participantStatus.index % 7),
+    ...listProcess.slice(0, participantStatus.index % 7),
   ];
 
   useEffect(() => {
@@ -63,8 +64,8 @@ export const ListProcess = ({ listProcess }: { listProcess: IBooth[] }) => {
                 item.indexBooth === currentIndex && !participantStatus.isFinish
                   ? "border-primary"
                   : participantStatus.isDone?.includes(item.indexBooth)
-                  ? "border-green-600"
-                  : "border-gray-600 opacity-50"
+                    ? "border-green-600"
+                    : "border-gray-600 opacity-50"
               }`}
               key={index}
               onClick={() => {
