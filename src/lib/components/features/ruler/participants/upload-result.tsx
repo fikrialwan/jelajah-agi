@@ -186,6 +186,7 @@ export default function UploadResult({
     } else {
       html5QrCode.clear();
     }
+
     // cleanup function when component will unmount
     return () => {
       //   html5QrCode.clear();
@@ -202,66 +203,64 @@ export default function UploadResult({
       >
         Upload hasil
       </Button>
+      <div
+        id="scan-qr-reader"
+        className={`w-screen h-screen !fixed top-0 left-0 ${showQRScanner ? "block" : "hidden"} z-50`}
+      />
       <Dialog open={open}>
         <DialogContent>
-          {showQRScanner ? (
-            <div
-              id="scan-qr-reader"
-              className="w-full h-[300px] flex items-center justify-center"
-            />
-          ) : (
-            <DialogHeader>
-              <DialogTitle className="text-center">Upload hasil</DialogTitle>
-              <form className="flex flex-col gap-2">
-                {typeResult === "link" && (
-                  <fieldset className="flex flex-col items-start">
-                    <label>Link</label>
-                    <Input
-                      onChange={(e) => setResult(e.target.value)}
-                      placeholder="ex. https://www.instagram.com/astragemaislami/"
-                      name="link"
-                    />
-                  </fieldset>
-                )}
+          <DialogHeader>
+            <DialogTitle className="text-center">Upload hasil</DialogTitle>
+            <form className="flex flex-col gap-2">
+              {typeResult === "link" && (
+                <fieldset className="flex flex-col items-start">
+                  <label>Link</label>
+                  <Input
+                    onChange={(e) => setResult(e.target.value)}
+                    placeholder="ex. https://www.instagram.com/astragemaislami/"
+                    name="link"
+                  />
+                </fieldset>
+              )}
 
-                {typeResult === "file" && (
-                  <fieldset className="flex flex-col items-start">
-                    <label>Image</label>
-                    <Input
-                      name="img"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          setFile(e.target.files[0]);
-                        } else {
-                          setFile(null);
-                        }
-                      }}
-                    />
-                  </fieldset>
-                )}
-                <Button
-                  type="button"
-                  className="mt-2"
-                  variant="default"
-                  onClick={() => {
-                    setShowQRScanner(true);
-                  }}
-                >
-                  Save
-                </Button>
-                <Button
-                  type="button"
-                  className="mt-2"
-                  variant="secondary"
-                  onClick={() => setOpen(false)}
-                >
-                  Close
-                </Button>
-              </form>
-            </DialogHeader>
-          )}
+              {typeResult === "file" && (
+                <fieldset className="flex flex-col items-start">
+                  <label>Image</label>
+                  <Input
+                    name="img"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        setFile(e.target.files[0]);
+                      } else {
+                        setFile(null);
+                      }
+                    }}
+                  />
+                </fieldset>
+              )}
+              <Button
+                type="button"
+                className="mt-2"
+                variant="default"
+                onClick={() => {
+                  setShowQRScanner(true);
+                  setOpen(false);
+                }}
+              >
+                Save
+              </Button>
+              <Button
+                type="button"
+                className="mt-2"
+                variant="secondary"
+                onClick={() => setOpen(false)}
+              >
+                Close
+              </Button>
+            </form>
+          </DialogHeader>
         </DialogContent>
       </Dialog>
     </>
