@@ -35,6 +35,7 @@ export default function UploadResult({
   uid,
 }: IProps) {
   const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
+  const [html5QrcodeVar, setHtml5QrcodeVar] = useState<Html5Qrcode>();
   const [open, setOpen] = useState<boolean>(false);
   const [result, setResult] = useState<string>("");
   const [listBooth, setListBooth] = useAtom(ListBooth);
@@ -81,6 +82,7 @@ export default function UploadResult({
         updateData(result);
       }
     } else {
+      setFile(null);
       toast({
         variant: "destructive",
         title: "Uh oh! Failed.",
@@ -141,6 +143,7 @@ export default function UploadResult({
 
   useEffect(() => {
     const html5QrCode = new Html5Qrcode("scan-qr-reader");
+    setHtml5QrcodeVar(html5QrCode);
     const qrCodeSuccessCallback = (decodedText: any) => {
       // decodedText = text hasil scan
       // decodedResult = {result text, decoderName, format dll}
@@ -156,6 +159,7 @@ export default function UploadResult({
               variant: "destructive",
               title: "Can't scan QR Code. Please scan the correct QR Code.",
             });
+            setFile(null);
             setOpen(false);
           }
         } else {
@@ -212,7 +216,12 @@ export default function UploadResult({
           <Button
             variant={"destructive"}
             onClick={() => {
+              if (html5QrcodeVar) {
+                html5QrcodeVar.stop();
+              }
+              setFile(null);
               setShowQRScanner(false);
+              setOpen(false);
             }}
           >
             Stop Scan
@@ -258,7 +267,6 @@ export default function UploadResult({
                 variant="default"
                 onClick={() => {
                   if (checkCountdownValid(endCountdown)) {
-                    setIsLoading(true);
                     if (typeResult === "file") {
                       if (!file) {
                         toast({
@@ -293,7 +301,10 @@ export default function UploadResult({
                 type="button"
                 className="mt-2"
                 variant="secondary"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                  setFile(null);
+                }}
               >
                 Close
               </Button>
