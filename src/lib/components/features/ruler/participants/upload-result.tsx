@@ -127,7 +127,7 @@ export default function UploadResult({
         ? [...participantStatus.isDone, currentBooth]
         : [currentBooth],
       isFinish:
-        participantStatus.isDone && participantStatus.isDone.length === 5
+        participantStatus.isDone && participantStatus.isDone.length === 6
           ? true
           : false,
     };
