@@ -207,6 +207,18 @@ export default function UploadResult({
         id="scan-qr-reader"
         className={`w-screen h-screen !fixed top-0 left-0 bg-black ${showQRScanner ? "block" : "hidden"} z-50`}
       />
+      {showQRScanner && (
+        <div className="fixed bottom-0 z-50 py-2 flex justify-center items-center">
+          <Button
+            variant={"destructive"}
+            onClick={() => {
+              setShowQRScanner(false);
+            }}
+          >
+            Stop Scan
+          </Button>
+        </div>
+      )}
       <Dialog open={open}>
         <DialogContent>
           <DialogHeader>
@@ -245,8 +257,34 @@ export default function UploadResult({
                 className="mt-2"
                 variant="default"
                 onClick={() => {
-                  setShowQRScanner(true);
-                  setOpen(false);
+                  if (checkCountdownValid(endCountdown)) {
+                    setIsLoading(true);
+                    if (typeResult === "file") {
+                      if (!file) {
+                        toast({
+                          title: "Pilih File",
+                        });
+                        return;
+                      }
+                      setShowQRScanner(true);
+                      setOpen(false);
+                    } else {
+                      if (!result) {
+                        toast({
+                          title: "Isi Link",
+                        });
+                        return;
+                      }
+                      setShowQRScanner(true);
+                      setOpen(false);
+                    }
+                  } else {
+                    toast({
+                      variant: "destructive",
+                      title: "Uh oh! Failed.",
+                      description: "Waktu telah habis.",
+                    });
+                  }
                 }}
               >
                 Save
