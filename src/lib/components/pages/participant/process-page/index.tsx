@@ -44,7 +44,7 @@ const ParticipantProcess = () => {
               if (snapshotActivity.exists()) {
                 setCurrentActivity(snapshotActivity.val());
               }
-            }
+            },
           );
         }
       }
@@ -62,7 +62,7 @@ const ParticipantProcess = () => {
   const currentIndex =
     participantStatus.currentBooth !== undefined
       ? participantStatus.currentBooth
-      : participantStatus.index % 6;
+      : participantStatus.index % 7;
   const currentBooth = listBooth[currentIndex];
 
   return (
