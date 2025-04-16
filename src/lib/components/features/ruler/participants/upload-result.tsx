@@ -205,7 +205,7 @@ export default function UploadResult({
       </Button>
       <div
         id="scan-qr-reader"
-        className={`w-screen h-screen !fixed top-0 left-0 ${showQRScanner ? "block" : "hidden"} z-50`}
+        className={`w-screen h-screen !fixed top-0 left-0 bg-black ${showQRScanner ? "block" : "hidden"} z-50`}
       />
       <Dialog open={open}>
         <DialogContent>
