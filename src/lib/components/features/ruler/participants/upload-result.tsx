@@ -35,6 +35,7 @@ export default function UploadResult({
   uid,
 }: IProps) {
   const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
+  const [html5QrcodeVar, setHtml5QrcodeVar] = useState<Html5Qrcode>();
   const [open, setOpen] = useState<boolean>(false);
   const [result, setResult] = useState<string>("");
   const [listBooth, setListBooth] = useAtom(ListBooth);
@@ -81,6 +82,7 @@ export default function UploadResult({
         updateData(result);
       }
     } else {
+      setFile(null);
       toast({
         variant: "destructive",
         title: "Uh oh! Failed.",
@@ -141,6 +143,7 @@ export default function UploadResult({
 
   useEffect(() => {
     const html5QrCode = new Html5Qrcode("scan-qr-reader");
+    setHtml5QrcodeVar(html5QrCode);
     const qrCodeSuccessCallback = (decodedText: any) => {
       // decodedText = text hasil scan
       // decodedResult = {result text, decoderName, format dll}
@@ -156,6 +159,7 @@ export default function UploadResult({
               variant: "destructive",
               title: "Can't scan QR Code. Please scan the correct QR Code.",
             });
+            setFile(null);
             setOpen(false);
           }
         } else {
@@ -207,6 +211,23 @@ export default function UploadResult({
         id="scan-qr-reader"
         className={`w-screen h-screen !fixed top-0 left-0 bg-black ${showQRScanner ? "block" : "hidden"} z-50`}
       />
+      {showQRScanner && (
+        <div className="fixed bottom-0 z-50 py-2 flex justify-center items-center">
+          <Button
+            variant={"destructive"}
+            onClick={() => {
+              if (html5QrcodeVar) {
+                html5QrcodeVar.stop();
+              }
+              setFile(null);
+              setShowQRScanner(false);
+              setOpen(false);
+            }}
+          >
+            Stop Scan
+          </Button>
+        </div>
+      )}
       <Dialog open={open}>
         <DialogContent>
           <DialogHeader>
@@ -245,8 +266,33 @@ export default function UploadResult({
                 className="mt-2"
                 variant="default"
                 onClick={() => {
-                  setShowQRScanner(true);
-                  setOpen(false);
+                  if (checkCountdownValid(endCountdown)) {
+                    if (typeResult === "file") {
+                      if (!file) {
+                        toast({
+                          title: "Pilih File",
+                        });
+                        return;
+                      }
+                      setShowQRScanner(true);
+                      setOpen(false);
+                    } else {
+                      if (!result) {
+                        toast({
+                          title: "Isi Link",
+                        });
+                        return;
+                      }
+                      setShowQRScanner(true);
+                      setOpen(false);
+                    }
+                  } else {
+                    toast({
+                      variant: "destructive",
+                      title: "Uh oh! Failed.",
+                      description: "Waktu telah habis.",
+                    });
+                  }
                 }}
               >
                 Save
@@ -255,7 +301,10 @@ export default function UploadResult({
                 type="button"
                 className="mt-2"
                 variant="secondary"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                  setFile(null);
+                }}
               >
                 Close
               </Button>
