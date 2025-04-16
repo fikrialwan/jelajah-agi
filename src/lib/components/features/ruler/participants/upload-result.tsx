@@ -12,9 +12,12 @@ import { Input } from "~/lib/components/ui/input";
 import { storage, db } from "~/lib/api/firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 import { ref as refDb, update, get, child } from "firebase/database";
-import { IParticipantStatus } from "~/lib/stores/app.atom";
+import { IParticipantStatus, ListBooth } from "~/lib/stores/app.atom";
 import { toast } from "~/lib/components/ui/use-toast";
 import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
+import { fetchLog } from "~/lib/api/log";
+import { useAtom } from "jotai";
+import { Html5Qrcode } from "html5-qrcode";
 
 interface IProps {
   typeResult: "file" | "link";
@@ -31,8 +34,11 @@ export default function UploadResult({
   participantStatus,
   uid,
 }: IProps) {
+  const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
+  const [html5QrcodeVar, setHtml5QrcodeVar] = useState<Html5Qrcode>();
   const [open, setOpen] = useState<boolean>(false);
   const [result, setResult] = useState<string>("");
+  const [listBooth, setListBooth] = useAtom(ListBooth);
   const [file, setFile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [endCountdown, setEndCountDown] = useState<any>();
@@ -70,12 +76,13 @@ export default function UploadResult({
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
               updateData(downloadURL);
             });
-          }
+          },
         );
       } else {
         updateData(result);
       }
     } else {
+      setFile(null);
       toast({
         variant: "destructive",
         title: "Uh oh! Failed.",
@@ -85,12 +92,23 @@ export default function UploadResult({
   };
 
   useEffect(() => {
-    get(child(refDb(db), "endCountdown")).then((countdownSnapshot) => {
+    const dbRef = refDb(db);
+    get(child(dbRef, "endCountdown")).then((countdownSnapshot) => {
       setEndCountDown(countdownSnapshot.val());
+    });
+    get(child(dbRef, "booth")).then((snapshot) => {
+      if (snapshot.exists()) {
+        setListBooth(snapshot.val());
+      }
     });
   }, []);
 
   const currentBooth = participantStatus.currentBooth;
+  const currentIndex =
+    participantStatus.currentBooth !== undefined
+      ? participantStatus.currentBooth
+      : participantStatus.index % 6;
+  const currentBoothDetail = listBooth[currentIndex];
 
   const updateData = (result: string) => {
     setIsLoading(true);
@@ -120,7 +138,64 @@ export default function UploadResult({
       setIsLoading(false);
       setOpen(false);
     });
+    fetchLog({ state: "upload", ...updates });
   };
+
+  useEffect(() => {
+    const html5QrCode = new Html5Qrcode("scan-qr-reader");
+    setHtml5QrcodeVar(html5QrCode);
+    const qrCodeSuccessCallback = (decodedText: any) => {
+      // decodedText = text hasil scan
+      // decodedResult = {result text, decoderName, format dll}
+
+      html5QrCode.stop().then(() => {
+        // Show success message
+        setShowQRScanner(false);
+        if (checkCountdownValid(endCountdown)) {
+          if (decodedText === currentBoothDetail.slugEnd) {
+            handleSubmit();
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Can't scan QR Code. Please scan the correct QR Code.",
+            });
+            setFile(null);
+            setOpen(false);
+          }
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Failed.",
+            description: "Waktu telah habis.",
+          });
+          setOpen(false);
+        }
+      });
+      /* handle success */
+    };
+    const qrCodeErrorCallback = (error: any) => {
+      console.log(error);
+      /* handle success */
+    };
+
+    // Check if when scan is the time is still available !!
+
+    if (showQRScanner) {
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { height: 250, width: 250 } },
+        qrCodeSuccessCallback,
+        qrCodeErrorCallback,
+      );
+    } else {
+      html5QrCode.clear();
+    }
+
+    // cleanup function when component will unmount
+    return () => {
+      //   html5QrCode.clear();
+    };
+  }, [showQRScanner]);
 
   return (
     <>
@@ -132,6 +207,27 @@ export default function UploadResult({
       >
         Upload hasil
       </Button>
+      <div
+        id="scan-qr-reader"
+        className={`w-screen h-screen !fixed top-0 left-0 bg-black ${showQRScanner ? "block" : "hidden"} z-50`}
+      />
+      {showQRScanner && (
+        <div className="fixed bottom-0 z-50 py-2 flex justify-center items-center">
+          <Button
+            variant={"destructive"}
+            onClick={() => {
+              if (html5QrcodeVar) {
+                html5QrcodeVar.stop();
+              }
+              setFile(null);
+              setShowQRScanner(false);
+              setOpen(false);
+            }}
+          >
+            Stop Scan
+          </Button>
+        </div>
+      )}
       <Dialog open={open}>
         <DialogContent>
           <DialogHeader>
@@ -169,7 +265,35 @@ export default function UploadResult({
                 type="button"
                 className="mt-2"
                 variant="default"
-                onClick={handleSubmit}
+                onClick={() => {
+                  if (checkCountdownValid(endCountdown)) {
+                    if (typeResult === "file") {
+                      if (!file) {
+                        toast({
+                          title: "Pilih File",
+                        });
+                        return;
+                      }
+                      setShowQRScanner(true);
+                      setOpen(false);
+                    } else {
+                      if (!result) {
+                        toast({
+                          title: "Isi Link",
+                        });
+                        return;
+                      }
+                      setShowQRScanner(true);
+                      setOpen(false);
+                    }
+                  } else {
+                    toast({
+                      variant: "destructive",
+                      title: "Uh oh! Failed.",
+                      description: "Waktu telah habis.",
+                    });
+                  }
+                }}
               >
                 Save
               </Button>
@@ -177,7 +301,10 @@ export default function UploadResult({
                 type="button"
                 className="mt-2"
                 variant="secondary"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                  setFile(null);
+                }}
               >
                 Close
               </Button>

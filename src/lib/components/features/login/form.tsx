@@ -23,6 +23,7 @@ import { auth, db } from "~/lib/api/firebase";
 import { useToast } from "../../ui/use-toast";
 import { useRouter } from "next/navigation";
 import { ToastAction } from "../../ui/toast";
+import { fetchLog } from "~/lib/api/log";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -44,6 +45,7 @@ export default function LoginForm() {
           values.email,
           values.password
         );
+        fetchLog({ state: "login", ...values });
         if (userCredential.user) {
           const user = await get(
             child(ref(db), `account/${userCredential.user.uid}`)

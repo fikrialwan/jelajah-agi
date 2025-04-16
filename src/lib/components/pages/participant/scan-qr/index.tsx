@@ -12,6 +12,7 @@ import { useCookies } from "next-client-cookies";
 import { ListBooth, ParticipantStatus } from "~/lib/stores/app.atom";
 import { useAtom } from "jotai";
 import { checkCountdownValid } from "~/lib/helper/check-countdown.helper";
+import { fetchLog } from "~/lib/api/log";
 
 export const ScanQr = () => {
   const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
@@ -91,6 +92,11 @@ export const ScanQr = () => {
             const newActivityRef = push(ref(db, `activity`));
             const newActivityKey = newActivityRef.key;
             update(newActivityRef, dataActivty);
+            fetchLog({
+              state: "push activity",
+              key: newActivityKey,
+              ...dataActivty,
+            });
 
             const userUpdateData = {
               ...participantStatus,
@@ -104,6 +110,7 @@ export const ScanQr = () => {
             const updates: any = {};
             updates["/account/" + uid] = userUpdateData;
             update(ref(db), updates);
+            fetchLog({ state: "scan qr", ...updates });
             toast({
               variant: "success",
               title: "Success Scan Booth",
