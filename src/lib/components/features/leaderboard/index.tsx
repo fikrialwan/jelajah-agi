@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "../../ui/card";
-import Link from "next/link";
-import { Button } from "../../ui/button";
 
 import { useEffect } from "react";
 import { db } from "~/lib/api/firebase";
@@ -48,7 +46,7 @@ const CardBoard = ({
   );
 };
 
-const LeaderboardList = () => {
+const LeaderboardList = ({ hideTitle = false }: { hideTitle?: boolean }) => {
   const [dataTeam, setDataTeam] = useState<any[]>([]);
 
   useEffect(() => {
@@ -134,9 +132,11 @@ const LeaderboardList = () => {
 
   return (
     <div className="w-full">
-      <div className="text-center mb-5">
-        <h1 className="font-semibold text-2xl">Leaderboard</h1>
-      </div>
+      {!hideTitle && (
+        <div className="text-center mb-5">
+          <h1 className="font-semibold text-2xl">Leaderboard</h1>
+        </div>
+      )}
       {dataTeam.map((item, index) => {
         return (
           <CardBoard

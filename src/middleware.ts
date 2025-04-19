@@ -21,6 +21,12 @@ export async function middleware(request: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
+  if (
+    request.nextUrl.pathname.startsWith("/broadcast") &&
+    role?.value !== "broadcast"
+  ) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
   return response;
 }
 
