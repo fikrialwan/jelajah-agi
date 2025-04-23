@@ -1,3 +1,4 @@
+import { Card, CardContent } from "~/lib/components/ui/card";
 import { formatterTime } from "~/lib/helper/formatter.helper";
 import { getTime } from "~/lib/helper/time.helper";
 
@@ -10,27 +11,31 @@ export const CardTeam = (props: {
 }) => {
   const { name, score, endDate, startDate, index } = props;
   return (
-    <div className="py-5 px-6 rounded-lg shadow-md border flex justify-between items-center">
-      <div className="flex flex-row items-center gap-2">
-        <p
-          className={`order p-3 rounded-full ${
-            index === 0
-              ? "bg-[#d4af37]"
-              : index === 1
-              ? "bg-[#c0c0c0]"
-              : index === 2
-              ? "bg-[#CD7F32]"
-              : ""
-          }`}
-        >
-          {index + 1}
+    <Card className="border border-primary shadow-md">
+      <CardContent
+        className={`flex justify-between items-center py-1 px-2 rounded-sm font-bold`}
+      >
+        <div className="flex flex-row items-center gap-2">
+          <p
+            className={`order p-2 rounded-full ${
+              index === 0
+                ? "bg-[#d4af37]"
+                : index === 1
+                ? "bg-[#c0c0c0]"
+                : index === 2
+                ? "bg-[#CD7F32]"
+                : ""
+            }`}
+          >
+            {index + 1}
+          </p>
+          <h3>{name}</h3>
+        </div>
+        <p className="font-semibold text-end text-xs">
+          <span className="text-green-600 text-sm">Score: {score}</span> <br />
+          Time: {formatterTime(getTime(endDate) - getTime(startDate)).formatted}
         </p>
-        <h3>{name}</h3>
-      </div>
-      <p className="font-semibold text-end text-sm">
-        <span className="text-green-600 text-xl">Score: {score}</span> <br />
-        Time: {formatterTime(getTime(endDate) - getTime(startDate)).formatted}
-      </p>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

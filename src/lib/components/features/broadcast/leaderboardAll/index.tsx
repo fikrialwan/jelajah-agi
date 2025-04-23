@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent } from "../../ui/card";
 
 import { useEffect } from "react";
 import { db } from "~/lib/api/firebase";
 import { ref, onValue, get, child } from "firebase/database";
 import { MAX_MEMBER } from "~/lib/utils/config";
+import { Card, CardContent } from "~/lib/components/ui/card";
 
 interface ILeaderBoard {
   uid: string;
@@ -26,27 +26,31 @@ const CardBoard = ({
   score: number;
 }) => {
   return (
-    <Card className="my-3 border border-primary shadow-md">
+    <Card className="border border-primary shadow-md">
       <CardContent
-        className={`flex justify-between items-center p-5 rounded-sm font-bold`}
+        className={`flex justify-between items-center py-1 px-2 rounded-sm font-bold`}
       >
-        <span>
+        <div className="flex flex-row items-center gap-2">
           <span
-            className={`mr-5 border p-3 rounded-full ${
+            className={`order p-2 rounded-full ${
               index === 0 ? "bg-[#d4af37]" : ""
             }`}
           >
             {index + 1}
           </span>
           {teamName}
-        </span>
+        </div>
         <span>{score}</span>
       </CardContent>
     </Card>
   );
 };
 
-const LeaderboardList = ({ title = "Leaderboard" }: { title?: string }) => {
+const BroadcastLeaderboardList = ({
+  title = "Leaderboard",
+}: {
+  title?: string;
+}) => {
   const [dataTeam, setDataTeam] = useState<any[]>([]);
 
   useEffect(() => {
@@ -132,22 +136,22 @@ const LeaderboardList = ({ title = "Leaderboard" }: { title?: string }) => {
 
   return (
     <div className="w-full">
-      <div className="text-center mb-5">
-        <h1 className="font-semibold text-2xl">{title}</h1>
-      </div>
-
-      {dataTeam.map((item, index) => {
-        return (
-          <CardBoard
-            teamName={item.name}
-            key={index}
-            index={index}
-            score={item.score}
-          />
-        );
-      })}
+      <h1 className="font-semibold text-lg text-center w-full">{title}</h1>
+      <ul className="flex w-full flex-col p-2 gap-2">
+        {dataTeam.map((item, index) => {
+          return (
+            <li key={index}>
+              <CardBoard
+                teamName={item.name}
+                index={index}
+                score={item.score}
+              />
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 };
 
-export default LeaderboardList;
+export default BroadcastLeaderboardList;
