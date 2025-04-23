@@ -14,9 +14,19 @@ interface IProps {
 
 export default function BroadcastLeaderboardComp({ booth }: IProps) {
   const [activities, setActivities] = useState<IActivity[]>([]);
+  const [boothName, setBoothName] = useState<string>("");
 
   useEffect(() => {
     const activityRef = ref(db, "activity");
+    get(child(ref(db), "booth")).then((snapshot) => {
+      const boothData = snapshot.val();
+      if (boothData) {
+        const item = boothData.find((item: any) => item.slug === booth);
+        if (item) {
+          setBoothName(item.name);
+        }
+      }
+    });
     const unsubscribe = onValue(activityRef, async (snapshot) => {
       const activitiesTemp: IActivity[] = [];
       const snapshotData = Object.entries(snapshot.val()).map(
@@ -62,20 +72,25 @@ export default function BroadcastLeaderboardComp({ booth }: IProps) {
   }, [booth]);
 
   return (
-    <ul className="flex w-full flex-col p-2 gap-3">
-      {activities.map((activity, index) => {
-        return (
-          <li key={activity.id}>
-            <CardTeam
-              index={index}
-              name={activity.name}
-              score={activity.score}
-              startDate={activity.startDate}
-              endDate={activity.endDate}
-            />
-          </li>
-        );
-      })}
-    </ul>
+    <div>
+      <h1 className="font-semibold text-lg text-center w-full">
+        Pos {boothName}
+      </h1>
+      <ul className="flex w-full flex-col p-2 gap-2">
+        {activities.map((activity, index) => {
+          return (
+            <li key={activity.id}>
+              <CardTeam
+                index={index}
+                name={activity.name}
+                score={activity.score}
+                startDate={activity.startDate}
+                endDate={activity.endDate}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
