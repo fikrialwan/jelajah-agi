@@ -77,19 +77,21 @@ export default function BroadcastLeaderboardComp({ booth }: IProps) {
         Pos {boothName}
       </h1>
       <ul className="flex w-full flex-col p-2 gap-2">
-        {activities.map((activity, index) => {
-          return (
-            <li key={activity.id}>
-              <CardTeam
-                index={index}
-                name={activity.name}
-                score={activity.score}
-                startDate={activity.startDate}
-                endDate={activity.endDate}
-              />
-            </li>
-          );
-        })}
+        {activities
+          .filter((_, index) => index < 5)
+          .map((activity, index) => {
+            return (
+              <li key={activity.id}>
+                <CardTeam
+                  index={index}
+                  name={activity.name}
+                  score={activity.score}
+                  startDate={activity.startDate}
+                  endDate={activity.endDate}
+                />
+              </li>
+            );
+          })}
       </ul>
     </div>
   );
