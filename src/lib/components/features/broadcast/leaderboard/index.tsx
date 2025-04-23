@@ -78,6 +78,13 @@ export default function BroadcastLeaderboardComp({ booth }: IProps) {
       </h1>
       <ul className="flex w-full flex-col p-2 gap-2">
         {activities
+          .sort((a, b) =>
+            b.score !== a.score
+              ? b.score - a.score
+              : getTime(a.endDate) -
+                getTime(a.startDate) -
+                (getTime(b.endDate) - getTime(b.startDate))
+          )
           .filter((_, index) => index < 5)
           .map((activity, index) => {
             return (
