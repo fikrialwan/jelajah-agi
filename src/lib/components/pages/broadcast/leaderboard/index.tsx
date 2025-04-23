@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { onValue, ref } from "firebase/database";
+import { child, onValue, ref, get } from "firebase/database";
 import { db } from "~/lib/api/firebase";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "~/lib/components/ui/tabs";
+import { formatterTime } from "~/lib/helper/formatter.helper";
 import BroadcastLeaderboardComp from "~/lib/components/features/broadcast/leaderboard";
-import LeaderboardList from "~/lib/components/features/leaderboard";
+import BroadcastLeaderboardList from "~/lib/components/features/broadcast/leaderboardAll";
 
 interface IBooth {
   name: string;
@@ -38,25 +33,47 @@ export default function BroadcastLeaderboard() {
   }
 
   return (
-    <div className="w-full p-2">
-      <Tabs defaultValue={"all"} className="w-full">
-        <TabsList className="w-full flex flex-row justify-start overflow-x-auto">
-          <TabsTrigger value={"all"}>All</TabsTrigger>
-          {booths.map(({ slug, name }) => (
-            <TabsTrigger key={slug} value={slug}>
-              {name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <TabsContent value="all">
-          <LeaderboardList hideTitle />
-        </TabsContent>
+    <div className="w-full h-full p-2 flex flex-col">
+      <div className="flex-1 w-full grid-cols-4 gap-2 hidden lg:grid">
+        <BroadcastLeaderboardList title="All Pos" />
         {booths.map(({ slug }) => (
-          <TabsContent value={slug} key={slug}>
-            <BroadcastLeaderboardComp booth={slug} />
-          </TabsContent>
+          <BroadcastLeaderboardComp key={slug} booth={slug} />
         ))}
-      </Tabs>
+      </div>
+      <div className="flex lg:hidden flex-1 w-full items-center h-full justify-center">
+        <p className="text-center">Mohon gunakan layar besar</p>
+      </div>
+      <Countdown />
     </div>
   );
 }
+
+const Countdown = () => {
+  const [countdown, setCountdown] = useState<string>("00:00:00");
+  useEffect(() => {
+    setInterval(() => {
+      get(child(ref(db), "endCountdown")).then((snapshot) => {
+        if (snapshot.val() === "-") {
+          setCountdown("00:00:00");
+        } else {
+          const now = new Date();
+          const endCountdown = new Date(snapshot.val());
+          if (now.getTime() < endCountdown.getTime()) {
+            const difference = endCountdown.getTime() - now.getTime();
+
+            const { formatted } = formatterTime(difference);
+
+            setCountdown(formatted);
+          } else {
+            setCountdown("00:00:00");
+          }
+        }
+      });
+    }, 100);
+  }, []);
+  return (
+    <time className="font-semibold text-xl text-center w-full py-2">
+      {countdown}
+    </time>
+  );
+};
