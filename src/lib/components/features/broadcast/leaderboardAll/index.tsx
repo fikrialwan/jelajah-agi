@@ -138,17 +138,19 @@ const BroadcastLeaderboardList = ({
     <div className="w-full">
       <h1 className="font-semibold text-lg text-center w-full">{title}</h1>
       <ul className="flex w-full flex-col p-2 gap-2">
-        {dataTeam.map((item, index) => {
-          return (
-            <li key={index}>
-              <CardBoard
-                teamName={item.name}
-                index={index}
-                score={item.score}
-              />
-            </li>
-          );
-        })}
+        {dataTeam
+          .filter((_, index) => index < 5)
+          .map((item, index) => {
+            return (
+              <li key={index}>
+                <CardBoard
+                  teamName={item.name}
+                  index={index}
+                  score={item.score}
+                />
+              </li>
+            );
+          })}
       </ul>
     </div>
   );
