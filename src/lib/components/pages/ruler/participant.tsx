@@ -9,6 +9,7 @@ import CardParticipant from "../../features/ruler/participant/card";
 import ParticipantAdd from "../../features/ruler/participant/add";
 import { Button } from "../../ui/button";
 import { useToast } from "../../ui/use-toast";
+import ParticipantAddBulk from "../../features/ruler/participant/add-bulk";
 
 interface IAccount {
   id: string;
@@ -70,7 +71,10 @@ export default function Participant() {
       <h1 className="text-3xl font-semibold text-center">List Participant</h1>
       <div className="flex flex-row justify-between">
         <Button onClick={handleGenerate}>Generete Index</Button>
-        <ParticipantAdd />
+        <div className="flex flex-row gap-2">
+          <ParticipantAddBulk />
+          <ParticipantAdd />
+        </div>
       </div>
       <ul className="flex flex-col gap-3">
         {accounts.map(({ name, id }) => (
