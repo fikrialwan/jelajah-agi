@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { cn } from "~/lib/styles/utils";
 import SideNavLink from "./navlink";
-import { Store, User, Clock, UserCheck, ListOrderedIcon } from "lucide-react";
+import {
+  Store,
+  User,
+  Clock,
+  UserCheck,
+  ListOrderedIcon,
+  Tally5Icon,
+} from "lucide-react";
 
 export default function RulerSidebar() {
   return (
@@ -31,6 +38,9 @@ export default function RulerSidebar() {
           </SideNavLink>
           <SideNavLink icon={<ListOrderedIcon />} href="/ruler/leaderboard">
             Leaderboard
+          </SideNavLink>
+          <SideNavLink icon={<Tally5Icon />} href="/ruler/activity">
+            Activity
           </SideNavLink>
         </ul>
       </nav>
