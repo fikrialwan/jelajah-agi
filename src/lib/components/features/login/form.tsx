@@ -40,10 +40,11 @@ export default function LoginForm() {
     try {
       if (!isLoading) {
         setLoading(true);
+        const password = values.password.replaceAll(" ", "");
         const userCredential = await signInWithEmailAndPassword(
           auth,
           values.email,
-          values.password
+          password
         );
         fetchLog({ state: "login", ...values });
         if (userCredential.user) {
