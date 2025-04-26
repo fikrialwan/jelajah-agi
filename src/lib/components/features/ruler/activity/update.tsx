@@ -37,11 +37,13 @@ export default function ActivityUpdate({ uid }: IProps) {
   const dialogCLoseRef = useRef<HTMLButtonElement>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
+  const [totalMember, setTotalMember] = useState<number>(0);
 
   const form = useForm<z.infer<typeof activityUpdateFormSchema>>({
     resolver: zodResolver(activityUpdateFormSchema),
     values: {
       score,
+      totalMember,
     },
   });
 
@@ -51,6 +53,7 @@ export default function ActivityUpdate({ uid }: IProps) {
       const activity = snapshot.val();
       if (activity) {
         setScore(activity.score || 0);
+        setTotalMember(activity.totalMember || 0);
       }
     });
 
@@ -64,6 +67,7 @@ export default function ActivityUpdate({ uid }: IProps) {
       setLoading(true);
       update(ref(db, `activity/${uid}`), {
         score: values.score,
+        totalMember: values.totalMember,
       });
       form.reset();
       toast({
@@ -102,6 +106,23 @@ export default function ActivityUpdate({ uid }: IProps) {
                         {...field}
                         value={score}
                         onChange={(e) => setScore(Number(e.target.value))}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="totalMember"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total Member</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="ex: 10"
+                        {...field}
+                        value={totalMember}
+                        onChange={(e) => setTotalMember(Number(e.target.value))}
                       />
                     </FormControl>
                   </FormItem>
