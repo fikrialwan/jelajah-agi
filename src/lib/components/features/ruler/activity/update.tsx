@@ -38,12 +38,16 @@ export default function ActivityUpdate({ uid }: IProps) {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
   const [totalMember, setTotalMember] = useState<number>(0);
+  const [status, setStatus] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
   const form = useForm<z.infer<typeof activityUpdateFormSchema>>({
     resolver: zodResolver(activityUpdateFormSchema),
     values: {
       score,
       totalMember,
+      status,
+      endDate,
     },
   });
 
@@ -54,6 +58,8 @@ export default function ActivityUpdate({ uid }: IProps) {
       if (activity) {
         setScore(activity.score || 0);
         setTotalMember(activity.totalMember || 0);
+        setStatus(activity.status);
+        setEndDate(activity.endDate || "");
       }
     });
 
@@ -68,6 +74,8 @@ export default function ActivityUpdate({ uid }: IProps) {
       update(ref(db, `activity/${uid}`), {
         score: values.score,
         totalMember: values.totalMember,
+        status: values.status,
+        endDate: values.endDate,
       });
       form.reset();
       toast({
@@ -123,6 +131,40 @@ export default function ActivityUpdate({ uid }: IProps) {
                         {...field}
                         value={totalMember}
                         onChange={(e) => setTotalMember(Number(e.target.value))}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="ex: 10"
+                        {...field}
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Date</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="ex: 10"
+                        {...field}
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
                       />
                     </FormControl>
                   </FormItem>

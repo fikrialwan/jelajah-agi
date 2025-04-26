@@ -5,4 +5,6 @@ export const activityUpdateFormSchema = z.object({
     .number({ required_error: "Score is required" })
     .min(0, { message: "Score is required" }),
   totalMember: z.number(),
+  status: z.string(),
+  endDate: z.string().optional(),
 });
